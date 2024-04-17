@@ -1,0 +1,181 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,600");
+
+:root {
+  --primary: #396dff;
+  --primary--dim: #6987db;
+  --darkgrey: #d4d4d4;
+  --medgrey: #e0e0e0;
+  --grey: #f7f7f7;
+  --white: #fff;
+}
+
+/* with default 18px: */
+.u-xs {
+  /* 4px */
+  font-size: 0.22rem !important;
+}
+
+.u-s {
+  font-size: 0.44rem !important;
+}
+
+.u-sm {
+  font-size: 0.78rem !important;
+}
+
+.u-m {
+  font-size: 0.89rem !important;
+}
+
+.u-mm {
+  font-size: 1rem !important;
+}
+
+.u-mmm {
+  font-size: 1.17rem !important;
+}
+
+.u-l {
+  font-size: 1.33rem !important;
+}
+
+.u-ll {
+  font-size: 1.5rem !important;
+}
+
+.u-xl {
+  font-size: 1.67rem !important;
+}
+
+.u-huge {
+  font-size: 2.78rem !important;
+}
+
+/* utility classes; override everything else */
+.u-inline {
+  display: inline !important;
+}
+
+.u-block {
+  display: block !important;
+}
+
+.u-inline-block {
+  display: inline-block !important;
+}
+
+.u-width-fill {
+  width: 100% !important;
+}
+
+.u-height-fill {
+  height: 100% !important;
+}
+
+.u-width-fit {
+  width: fit-content !important;
+}
+
+.u-height-fit {
+  height: fit-content !important;
+}
+
+/* flexbox methods */
+
+.u-flex {
+  display: flex !important;
+}
+
+.u-flex-col {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.u-justify-center {
+  justify-content: center !important;
+}
+
+.u-align-center {
+  align-items: center !important;
+}
+
+.u-justify-start {
+  justify-content: flex-start !important;
+}
+
+.u-align-start {
+  align-items: flex-start !important;
+}
+
+.u-justify-space-between {
+  justify-content: space-between !important;
+}
+
+.u-align-space-between {
+  align-items: space-between !important;
+}
+
+.u-flex-center-row {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.u-flex-center-col {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* text */
+.linebreak-2 {
+  width: 100%;
+  height: 2vh;
+}
+
+.linebreak-1pt5 {
+  width: 100%;
+  height: 1.5vh;
+}
+
+.linebreak-1 {
+  width: 100%;
+  height: 1vh;
+}
+
+.linebreak-0pt5 {
+  width: 100%;
+  height: 0.5vh;
+}
+
+.u-bold {
+  font-weight: 600;
+}
+
+.u-text-center {
+  text-align: center;
+}
+
+.u-relative {
+  position: relative;
+}
+
+.u-pointer {
+  cursor: pointer;
+}
+
+.u-link {
+  color: var(--primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.u-text-center {
+  text-align: center;
+}
+
+.u-link:hover {
+  color: var(--primary--dim);
+}
