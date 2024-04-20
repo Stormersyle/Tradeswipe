@@ -1,7 +1,7 @@
 import React from "react";
 
-const Market = () => {
+const MatchPage = () => {
   <div className="page-container">Market</div>;
 };
 
-export default Market;
+export default MatchPage;

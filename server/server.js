@@ -1,12 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const http = require("http");
-const bodyParser = require("body-parser");
+const bodyParser = require("body-parser"); // allow node to automatically parse POST body requests as JSON
+const session = require("express-session"); // library that stores info about each connected user
 const path = require("path");
 require("dotenv").config();
+const SocketManager = require("./socket_manager.js");
 
 const app = express();
 const server = http.createServer(app);
+SocketManager.init(server); //make a new SocketIO server, tied to our HTTP server
 
 //connect to mongoDB
 const mongoConnectionURI = process.env.MONGO_SRV;
@@ -24,6 +27,16 @@ mongoose
 //this parses the body of every POST request into JSON; so in /api, we can directly treat req.body as an object, with each field their correct type!
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// set up a session, which will persist login data across requests
+const session_secret = process.env.SESSION_SECRET;
+app.use(
+  session({
+    secret: session_secret,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 //mount API router on "/api" path
 const api = require("./api.js");

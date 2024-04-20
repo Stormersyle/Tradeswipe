@@ -47,7 +47,8 @@ const io_init = (http_server) => {
   //creates a new SocketIO server and ties it to a given HTTP server
   io = new Server(http_server);
   io.on("connection", (socket) => {
-    // console.log(`socket has connected: ${socket.id}`);
+    console.log(`socket has connected: ${socket.id}`);
+    socket.emit("ready");
 
     //when a socket disconnects, make sure to remove it!
     socket.on("disconnect", () => {

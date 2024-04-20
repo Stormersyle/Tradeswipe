@@ -1,0 +1,86 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:normal");
+
+* {
+  scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans", sans-serif;
+  font-size: 18px;
+}
+
+@media only screen and (max-width: 768px) {
+  /* more specific than original * */
+  * {
+    font-size: 14px;
+    -webkit-text-size-adjust: 100%;
+  }
+  /* this is so stupid, mobile browsers automatically scale up your text if they don't think it's big enough, which is why the academics page kept having typography issues. put in this webkit adjust command to fit it */
+}
+
+/* this contains both page and navbar; makes sure page is centered + setup right */
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+/* contains just the page (not the navbar) */
+/* within the page container: 15% padding on left/right; 5vh padding on top/bottom */
+/* note: we need to use % for left/right padding, because % takes into account the vertical scrollbar while vw ignores it! so if we do 100vw, the page container will be too big and cause a horizontal scrollbar */
+/* note: total width = padding + width */
+.page-container {
+  padding: 5vh 15%;
+  width: 70%;
+  min-height: 70vh;
+  /* min-height: 70vh makes the page-container automatically extend to the bottom */
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* @media only screen and (max-width: 768px) and (orientation: portrait) {
+    .page-container {
+      min-height: 72vh;
+    }
+  } */
+
+.page-container div {
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: rgb(7, 217, 179);
+}
+
+a:hover {
+  color: rgb(7, 94, 217);
+}
+
+p {
+  line-height: 140%;
+}
+
+hr {
+  color: white;
+}
+
+/* note: to actually change button font, we should wrap the text in <p> */
+button {
+  margin: 3vh 1vw 3vh 0;
+  width: fit-content;
+  padding: 1vh 1vw;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  background-color: black;
+  color: white;
+}
+
+button:hover {
+  opacity: 70%;
+}

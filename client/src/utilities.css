@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,600");
-
 :root {
   --primary: #396dff;
   --primary--dim: #6987db;
@@ -105,6 +103,14 @@
 
 .u-align-start {
   align-items: flex-start !important;
+}
+
+.u-justify-end {
+  justify-content: flex-end !important;
+}
+
+.u-align-end {
+  align-items: flex-end !important;
 }
 
 .u-justify-space-between {
