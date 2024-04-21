@@ -13,8 +13,8 @@ import Home from "./components/home.js";
 import NavBar from "./components/navbar.js";
 import Market from "./components/market.js";
 import Match from "./components/match.js";
+import About from "./components/about.js";
 import Help from "./components/help.js";
-import Footer from "./components/footer.js";
 
 const GOOGLE_CLIENT_ID = "954844909530-hvosmig1l5f9j86o7vn7cmhh6r3sou05.apps.googleusercontent.com";
 
@@ -55,6 +55,7 @@ const App = () => {
           />
           <Route path="/market" element={<Market />} />
           <Route path="/match" element={<Match />} />
+          <Route path="/about" element={<About />} />
           <Route path="/help/:page" element={<Help />} />
         </Routes>
       </GoogleOAuthProvider>

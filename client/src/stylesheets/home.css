@@ -1,0 +1,33 @@
+.tradeswipe-title {
+  color: red;
+}
+
+#GoogleLogin {
+  width: auto;
+}
+
+.home-container {
+  width: 80vw;
+  height: 60vh;
+  /* min-height: 70vh makes the page-container automatically extend to the bottom */
+  /* background-color: black; */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-container p {
+  margin: 0;
+}
+
+.homepage-button {
+  background: rgb(1, 164, 162);
+  color: white;
+  padding: 1vh 1vw;
+  margin: 0 0.5vw;
+  width: 15vw;
+  height: 8vh;
+  border-radius: 5px;
+}

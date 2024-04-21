@@ -7,19 +7,30 @@ const Home = ({ handleLogin, loggedIn }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="page-container">
-      <p className="u-block u-xl">
-        Welcome to <span>Tradeswipe</span>
+    <div className="home-container">
+      <p className="u-block u-huge u-height-fit">
+        Welcome to <span className="u-huge tradeswipe-title">Tradeswipe</span>
       </p>
-      <p className="u-block u-mm">The marketplace for MIT meal swipes.</p>
+      <div className="linebreak-2"></div>
+      <p className="u-block u-ll u-height-fit">The marketplace for MIT meal swipes.</p>
+      <br />
+      <br />
       {loggedIn ? (
         <div className="u-flex u-justify-center u-align-center">
-          <button onClick={() => navigate("/get-started")}>Get Started</button>
-          <button onClick={() => navigate("/market")}>Trade Now</button>
+          <button onClick={() => navigate("/get-started")} className="homepage-button">
+            <p className="u-mmm">Setup Account</p>
+          </button>
+          <button onClick={() => navigate("/market")} className="homepage-button">
+            <p className="u-mmm">Trade Now</p>
+          </button>
         </div>
       ) : (
-        <div className="login">
-          <GoogleLogin onSuccess={handleLogin} onError={(err) => console.log(err)} />
+        <div className="u-width-fit">
+          <GoogleLogin
+            onSuccess={handleLogin}
+            onError={(err) => console.log(err)}
+            id="GoogleLogin"
+          />
         </div>
       )}
     </div>

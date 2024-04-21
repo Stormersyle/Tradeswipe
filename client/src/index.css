@@ -1,11 +1,16 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:normal");
 
 * {
-  scroll-behavior: smooth;
   margin: 0;
   padding: 0;
+  border: 0;
   font-family: "Open Sans", sans-serif;
-  font-size: 18px;
+}
+
+html,
+body {
+  height: 100%;
+  scroll-behavior: smooth;
 }
 
 @media only screen and (max-width: 768px) {
@@ -24,18 +29,17 @@
   align-items: center;
   justify-content: flex-start;
   width: 100%;
+  min-height: 100%;
+  background-color: #182038;
+  color: white;
+  padding: 0 0 5vh 0;
 }
 
-/* contains just the page (not the navbar) */
-/* within the page container: 15% padding on left/right; 5vh padding on top/bottom */
-/* note: we need to use % for left/right padding, because % takes into account the vertical scrollbar while vw ignores it! so if we do 100vw, the page container will be too big and cause a horizontal scrollbar */
-/* note: total width = padding + width */
 .page-container {
-  padding: 5vh 15%;
-  width: 70%;
-  min-height: 70vh;
+  width: 80vw;
+  height: fit-content;
   /* min-height: 70vh makes the page-container automatically extend to the bottom */
-  background-color: black;
+  /* background-color: black; */
   color: white;
   display: flex;
   flex-direction: column;
@@ -70,17 +74,20 @@ hr {
   color: white;
 }
 
-/* note: to actually change button font, we should wrap the text in <p> */
 button {
-  margin: 3vh 1vw 3vh 0;
-  width: fit-content;
-  padding: 1vh 1vw;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 18px;
-  background-color: black;
-  color: white;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
+/* need "cursor: pointer" in order for pointer-hand cursor to appear when hovering over button! */
 
 button:hover {
   opacity: 70%;
+}
+
+img {
+  display: block;
+  margin: 0;
+  padding: 0;
 }
