@@ -10,11 +10,12 @@ import "./index.css";
 import "./utilities.css";
 
 import Home from "./components/home.js";
-import NavBar from "./components/navbar.js";
+import Nav from "./components/nav.js";
 import Market from "./components/market.js";
 import Match from "./components/match.js";
-import About from "./components/about.js";
-import Help from "./components/help.js";
+import Info from "./components/info.js";
+import Profile from "./components/profile.js";
+import UpdateProfile from "./components/update_profile.js";
 
 const GOOGLE_CLIENT_ID = "954844909530-hvosmig1l5f9j86o7vn7cmhh6r3sou05.apps.googleusercontent.com";
 
@@ -40,23 +41,29 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    post("/api/logout").then(() => init()); //server handles removing the client socket from the map
+    post("/api/logout").then(() => {
+      init();
+    }); //server handles removing the client socket from the map
     console.log("Logged out successfully!");
   };
 
   return (
     <BrowserRouter>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <NavBar loggedIn={Boolean(user._id)} handleLogout={handleLogout} />
+        <Nav loggedIn={Boolean(user._id)} handleLogout={handleLogout} />
         <Routes>
           <Route
             path="/"
             element={<Home handleLogin={handleLogin} loggedIn={Boolean(user._id)} />}
           />
-          <Route path="/market" element={<Market />} />
-          <Route path="/match" element={<Match />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/help/:page" element={<Help />} />
+          <Route path="/market" element={<Market user={user} loggedIn={Boolean(user._id)} />} />
+          <Route path="/match" element={<Match user={user} loggedIn={Boolean(user._id)} />} />
+          <Route path="/info" element={<Info loggedIn={Boolean(user._id)} />} />
+          <Route path="/profile" element={<Profile user={user} loggedIn={Boolean(user._id)} />} />
+          <Route
+            path="/update_profile"
+            element={<UpdateProfile user={user} loggedIn={Boolean(user._id)} updateUser={init} />}
+          />
         </Routes>
       </GoogleOAuthProvider>
     </BrowserRouter>

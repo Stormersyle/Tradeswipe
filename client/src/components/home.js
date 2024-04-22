@@ -8,19 +8,21 @@ const Home = ({ handleLogin, loggedIn }) => {
 
   return (
     <div className="home-container">
-      <p className="u-block u-huge u-height-fit">
-        Welcome to <span className="u-huge tradeswipe-title">Tradeswipe</span>
+      <p className="u-block u-huge u-height-fit u-width-fit u-text-center">
+        <span className="u-huge tradeswipe-title">Tradeswipe</span>
       </p>
       <div className="linebreak-2"></div>
-      <p className="u-block u-ll u-height-fit">The marketplace for MIT meal swipes.</p>
+      <p className="u-block u-ll u-height-fit u-width-fit u-text-center">
+        The marketplace for MIT meal swipes.
+      </p>
       <br />
       <br />
       {loggedIn ? (
         <div className="u-flex u-justify-center u-align-center">
-          <button onClick={() => navigate("/get-started")} className="homepage-button">
-            <p className="u-mmm">Setup Account</p>
+          <button onClick={() => navigate("/info")} className="default-button">
+            <p className="u-mmm">Instructions</p>
           </button>
-          <button onClick={() => navigate("/market")} className="homepage-button">
+          <button onClick={() => navigate("/market")} className="default-button">
             <p className="u-mmm">Trade Now</p>
           </button>
         </div>

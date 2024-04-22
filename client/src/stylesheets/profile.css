@@ -1,0 +1,39 @@
+/* for profile page */
+#profile-box {
+  /* width: fit-content;
+    min-width: 30vw; */
+  width: 40vw;
+  padding: 2vh 2vw;
+  border: 1px solid white;
+  border-radius: 10px;
+}
+
+#update-box {
+  /* width: fit-content;
+    min-width: 30vw; */
+  width: 40vw;
+  padding: 2vh 2vw;
+  border: 1px solid white;
+  border-radius: 10px;
+}
+
+#stats-box {
+  /* width: fit-content;
+    min-width: 30vw; */
+  width: 40vw;
+  padding: 2vh 2vw;
+  border: 1px solid white;
+  border-radius: 10px;
+}
+
+@media only screen and (max-width: 800px) {
+  #profile-box {
+    width: 70vw;
+  }
+  #update-box {
+    width: 70vw;
+  }
+  #stats-box {
+    width: 70vw;
+  }
+}

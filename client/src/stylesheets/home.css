@@ -22,12 +22,12 @@
   margin: 0;
 }
 
-.homepage-button {
-  background: rgb(1, 164, 162);
+/* .homepage-button {
+  background: rgb(247, 122, 122);
   color: white;
-  padding: 1vh 1vw;
+  padding: 2vh 2vw;
   margin: 0 0.5vw;
-  width: 15vw;
-  height: 8vh;
+  width: fit-content;
+  height: fit-content;
   border-radius: 5px;
-}
+} */
