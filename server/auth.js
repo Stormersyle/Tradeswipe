@@ -76,9 +76,12 @@ function ensureLoggedIn(req, res, next) {
   if (!req.user) {
     return res.status(401).send({ err: "not logged in" });
   }
-
+  User.findById(req.user._id).then((user_doc) => {
+    if (!user_doc) return res.status(401).send({ err: "invalid user" });
+  });
   next();
 }
+// auth.ensureLoggedIn also ensures user is valid
 
 module.exports = {
   login,

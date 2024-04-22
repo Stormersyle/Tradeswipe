@@ -7,5 +7,6 @@ const User = new mongoose.Schema({
   venmo_username: { type: String, default: "" },
   is_buyer: { type: Boolean, default: false },
   is_seller: { type: Boolean, default: false },
+  directions: { type: String, default: "" },
 });
 module.exports = mongoose.model("users", User);
