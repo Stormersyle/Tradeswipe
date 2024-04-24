@@ -1,10 +1,11 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
 import "../stylesheets/navbar.css";
 
 const Navbar = ({ loggedIn, handleLogout }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   if (!loggedIn) {
     return (
@@ -50,7 +51,12 @@ const Navbar = ({ loggedIn, handleLogout }) => {
           <img src="/assets/home.png" className="nav-icon" />
         </Link>
         <button
-          onClick={() => navigate("/info")}
+          onClick={() => {
+            console.log("location", location);
+            if (location.pathname === "/market" || location.pathname === "/match")
+              navigate("/info/market-match-section");
+            else navigate("/info");
+          }}
           className="nav-button u-flex u-align-items u-height-fill "
         >
           <img src="/assets/help.png" className="nav-icon" />
@@ -105,7 +111,7 @@ const HamburgerMenu = ({ loggedIn, handleLogout }) => {
     <div className="hamburger-container u-width-fill">
       <div className="hamburger-menu">
         <input id="menu__toggle" type="checkbox" />
-        <label className="menu__btn" for="menu__toggle">
+        <label className="menu__btn" htmlFor="menu__toggle">
           <span></span>
         </label>
 

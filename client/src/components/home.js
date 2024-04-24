@@ -19,7 +19,7 @@ const Home = ({ handleLogin, loggedIn }) => {
       <br />
       {loggedIn ? (
         <div className="u-flex u-justify-center u-align-center">
-          <button onClick={() => navigate("/info")} className="default-button">
+          <button onClick={() => navigate("/info/setup-section")} className="default-button">
             <p className="u-mmm">Instructions</p>
           </button>
           <button onClick={() => navigate("/market")} className="default-button">

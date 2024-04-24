@@ -58,7 +58,7 @@ const App = () => {
           />
           <Route path="/market" element={<Market user={user} loggedIn={Boolean(user._id)} />} />
           <Route path="/match" element={<Match user={user} loggedIn={Boolean(user._id)} />} />
-          <Route path="/info" element={<Info loggedIn={Boolean(user._id)} />} />
+          <Route path="/info/:id?" element={<Info loggedIn={Boolean(user._id)} />} />
           <Route path="/profile" element={<Profile user={user} loggedIn={Boolean(user._id)} />} />
           <Route
             path="/update_profile"
