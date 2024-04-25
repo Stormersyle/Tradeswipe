@@ -1,0 +1,168 @@
+.market-box {
+  width: 100%;
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 3vh 0;
+}
+
+.filter-button {
+  color: white;
+  padding: 0.5vh 1vw;
+  margin: 0 1vw;
+  /* min-width: 10vw; */
+  width: fit-content;
+  /* min-height: 5vh; */
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid white;
+}
+
+.live-button {
+  background: rgb(247, 122, 122);
+}
+
+.reserve-button {
+  background: #93ccea;
+}
+
+.selected {
+  border: solid white 2px;
+}
+
+.deselected {
+  opacity: 50%;
+}
+
+.live-button:hover {
+  opacity: 100% !important;
+}
+
+.reserve-button:hover {
+  opacity: 100% !important;
+}
+
+.left-help {
+  margin: 0 0 0 2vw;
+}
+
+.right-plus {
+  margin: 0 2vw 0 0;
+}
+
+.market-icon {
+  height: 6vh;
+  max-height: 7vw;
+  width: auto;
+}
+
+.market-dropdown select {
+  font-size: var(--m) !important;
+}
+
+.market-dropdown select option {
+  font-size: var(--m) !important;
+}
+
+.dropdown-menu {
+  margin: 1vh 1vw;
+}
+
+/* dialog: block display */
+#dialog {
+  /* width: fit-content; */
+  width: fit-content;
+  height: fit-content;
+  padding: 2vh 2vw;
+  position: fixed; /* Use fixed to keep it placed relative to the viewport */
+  top: 5vh;
+  /* left: 20vw; */
+  left: 50%; /* Position the left edge of the element in the middle of the viewport */
+  transform: translate(-50%, 0); /* Shift the element left by half of its width */
+
+  background-color: #eeeeee;
+  border: 2px solid black;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  z-index: 1;
+}
+
+#dialog button {
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+}
+
+#dialog input {
+  border: 1px solid black;
+}
+
+.form-title {
+  white-space: nowrap;
+}
+
+/* editing styling of react-datepicker */
+.react-datepicker__header {
+  width: 100% !important;
+}
+
+.react-datepicker__month-container {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.react-datepicker__month-container div {
+  font-size: var(--sm) !important;
+}
+
+.react-datepicker__day-names {
+  display: flex !important;
+}
+
+.react-datepicker__week {
+  display: flex !important;
+  /* max-height: 5vh; */
+}
+
+.react-datepicker {
+  width: 100% !important;
+}
+.react-datepicker__input-time-container {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.react-datepicker-time__caption {
+  width: fit-content !important;
+  margin: 0 0 10px 5px !important;
+  padding: 0 !important;
+}
+
+.react-datepicker-time__input-container {
+  width: fit-content !important;
+  margin: 0 5px 10px 0 !important;
+  padding: 0 !important;
+}
+
+@media only screen and (max-width: 800px) {
+  .react-datepicker__input-time-container {
+    display: none !important;
+  }
+}
+
+/* .react-datepicker__tab-loop {
+    width: 100%;
+  } */
+
+/* .react-datepicker-popper {
+    width: 80% !important;
+  } */

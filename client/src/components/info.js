@@ -1,18 +1,7 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
 
 //use url parameter to scroll to a specific div
 const Info = ({ loggedIn }) => {
-  const { id } = useParams();
-
-  useEffect(() => {
-    if (!id) return;
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
-
   if (!loggedIn) {
     return (
       <div className="page-container">

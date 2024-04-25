@@ -86,7 +86,7 @@ const Update_Profile = ({ loggedIn, user, updateUser }) => {
       <div id="update-box">
         <p className="u-l u-flex u-justify-center">Update Profile</p>
         <div className="linebreak-1"></div>
-        <div className="u-width-fill u-flex u-justify-start u-align-center">
+        <div className="input-row">
           <label htmlFor="name">
             <b>Name:&nbsp;</b>
           </label>
@@ -97,14 +97,14 @@ const Update_Profile = ({ loggedIn, user, updateUser }) => {
           <b>Email:&nbsp;</b> {email}
         </p>
         <div className="linebreak-1"></div>
-        <div className="u-width-fill u-flex u-justify-start u-align-center">
+        <div className="input-row">
           <label htmlFor="phone_number">
             <b>Phone:&nbsp;</b>
           </label>
           <input id="phone_number" type="text" defaultValue={phone_number} ref={phoneRef} />
         </div>
         <div className="linebreak-1"></div>
-        <div className="u-width-fill u-flex u-justify-start u-align-center">
+        <div className="input-row">
           <label htmlFor="venmo_username">
             <b>Venmo Username:&nbsp;</b>
           </label>
@@ -116,7 +116,7 @@ const Update_Profile = ({ loggedIn, user, updateUser }) => {
           ></input>
         </div>
         <div className="linebreak-1"></div>
-        <div className="u-width-fill u-flex u-justify-start u-align-center">
+        <div className="input-row">
           <label htmlFor="is_buyer">
             <b>Buyer Enabled:&nbsp;</b>
           </label>
@@ -133,7 +133,7 @@ const Update_Profile = ({ loggedIn, user, updateUser }) => {
           )}
         </div>
         <div className="linebreak-1"></div>
-        <div className="u-width-fill u-flex u-justify-start u-align-center">
+        <div className="input-row">
           <label htmlFor="is_seller">
             <b>Seller Enabled:&nbsp;</b>
           </label>
@@ -150,7 +150,7 @@ const Update_Profile = ({ loggedIn, user, updateUser }) => {
           )}
         </div>
         <div className="linebreak-1"></div>
-        <div className="u-width-fill u-flex-column u-justify-center u-align-start">
+        <div className="input-col">
           <label htmlFor="directions">
             <b>Directions:&nbsp;</b>
           </label>

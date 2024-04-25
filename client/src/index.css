@@ -86,39 +86,13 @@ hr {
   color: white;
 }
 
-button {
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-/* need "cursor: pointer" in order for pointer-hand cursor to appear when hovering over button! */
-
-button:hover {
-  opacity: 70%;
-}
-
 img {
   display: block;
   margin: 0;
   padding: 0;
 }
 
-.default-button {
-  background: rgb(247, 122, 122);
-  color: white;
-  padding: 2vmin 2vmin;
-  margin: 0 0.5vw;
-  /* min-width: 10vw; */
-  width: fit-content;
-  /* min-height: 5vh; */
-  height: fit-content;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 5px;
-}
-
+/* both label and input/textarea are made block-level elements; so, we should put label/input in a horizontal flexbox to have them side-by side, vertical flexbox to have label on top */
 label {
   display: block;
   min-width: fit-content;
@@ -141,4 +115,64 @@ textarea {
 
 .checkbox {
   width: fit-content;
+}
+
+select {
+  display: block;
+}
+
+option {
+  height: fit-content;
+}
+
+button {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+/* need "cursor: pointer" in order for pointer-hand cursor to appear when hovering over button! */
+
+button:hover {
+  opacity: 70%;
+}
+
+.default-button {
+  background: rgb(247, 122, 122);
+  color: white;
+  padding: 2vmin 2vmin;
+  margin: 0 0.5vw;
+  /* min-width: 10vw; */
+  width: fit-content;
+  /* min-height: 5vh; */
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+
+/* img-button: for buttons containing an image */
+.img-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* for div containing label + input, where label & input are side by side */
+.input-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* for div containing label + input, where label is on top of input */
+.input-col {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 }

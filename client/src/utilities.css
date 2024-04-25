@@ -1,10 +1,13 @@
 :root {
-  --primary: #396dff;
-  --primary--dim: #6987db;
-  --darkgrey: #d4d4d4;
-  --medgrey: #e0e0e0;
-  --grey: #f7f7f7;
-  --white: #fff;
+  --xs: 0.22rem;
+  --s: 0.44rem;
+  --sm: 0.78rem;
+  --m: 0.89rem;
+  --mm: 1rem;
+  --l: 1.33rem;
+  --ll: 1.5rem;
+  --xl: 1.67rem;
+  --huge: 2.78rem;
 }
 
 /* with default 18px: */
@@ -83,10 +86,15 @@
 .u-flex {
   display: flex !important;
 }
+/* row by default */
 
 .u-flex-col {
   display: flex !important;
   flex-direction: column !important;
+}
+
+.u-wrap {
+  flex-wrap: wrap;
 }
 
 .u-justify-center {
@@ -121,7 +129,7 @@
   align-items: space-between !important;
 }
 
-.u-flex-center-row {
+.u-flex-center {
   display: flex !important;
   flex-direction: row !important;
   justify-content: center !important;

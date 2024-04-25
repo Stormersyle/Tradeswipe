@@ -5,7 +5,6 @@ import "../stylesheets/navbar.css";
 
 const Navbar = ({ loggedIn, handleLogout }) => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   if (!loggedIn) {
     return (
@@ -50,17 +49,9 @@ const Navbar = ({ loggedIn, handleLogout }) => {
         <Link to="/" className="nav-button">
           <img src="/assets/home.png" className="nav-icon" />
         </Link>
-        <button
-          onClick={() => {
-            console.log("location", location);
-            if (location.pathname === "/market" || location.pathname === "/match")
-              navigate("/info/market-match-section");
-            else navigate("/info");
-          }}
-          className="nav-button u-flex u-align-items u-height-fill "
-        >
-          <img src="/assets/help.png" className="nav-icon" />
-        </button>
+        <Link to="/info" className="nav-button">
+          <img src="/assets/info.png" className="nav-icon" />
+        </Link>
         <Link to="/profile" className="nav-button">
           <img src="/assets/profile.png" className="nav-icon" />
         </Link>
@@ -122,6 +113,11 @@ const HamburgerMenu = ({ loggedIn, handleLogout }) => {
             </a>
           </li>
           <li>
+            <a className="menu__item" href="/profile">
+              Profile
+            </a>
+          </li>
+          <li>
             <a className="menu__item" href="/market">
               Market
             </a>
@@ -133,12 +129,7 @@ const HamburgerMenu = ({ loggedIn, handleLogout }) => {
           </li>
           <li>
             <a className="menu__item" href="/info">
-              Info/Help
-            </a>
-          </li>
-          <li>
-            <a className="menu__item" href="/profile">
-              Profile
+              Info
             </a>
           </li>
           <li>
