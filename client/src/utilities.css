@@ -94,7 +94,7 @@
 }
 
 .u-wrap {
-  flex-wrap: wrap;
+  flex-wrap: wrap !important;
 }
 
 .u-justify-center {
@@ -172,24 +172,6 @@
   text-align: center;
 }
 
-.u-relative {
-  position: relative;
-}
-
-.u-pointer {
-  cursor: pointer;
-}
-
-.u-link {
-  color: var(--primary);
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.u-text-center {
-  text-align: center;
-}
-
-.u-link:hover {
-  color: var(--primary--dim);
+.u-hide {
+  display: none !important;
 }

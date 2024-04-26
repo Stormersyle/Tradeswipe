@@ -68,7 +68,7 @@ export function post(endpoint, params = {}) {
 //Utility functions try to parse it to JSON, so we shouldn't send plain numbers/tryings.
 
 export function formatDate(timestamp) {
-  //given unix timestamp, returns corresponding date as a string
+  //given unix timestamp (# of ms since epoch), returns corresponding date as a string
   const date = new Date(Number(timestamp));
   const formatter = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
@@ -76,4 +76,52 @@ export function formatDate(timestamp) {
     day: "2-digit",
   });
   return formatter.format(date);
+}
+
+export function convertToDisplay(name) {
+  const dict = {
+    maseeh: "Maseeh",
+    nv: "New Vassar",
+    mcc: "McCormick",
+    baker: "Baker",
+    simmons: "Simmons",
+    next: "Next House",
+    buy: "Buy",
+    sell: "Sell",
+    breakfast: "Breakfast",
+    lunch: "Lunch",
+    dinner: "Dinner",
+    "late night": "Late Night",
+    other: "Other",
+  };
+  return dict[name];
+}
+
+export function getDateTime(date) {
+  const week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  // Convert to EST timezone
+  const estTime = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" }));
+
+  // Extract components
+  const month = estTime.getMonth() + 1; // getMonth() returns 0-11
+  const day = estTime.getDate();
+  const year = estTime.getFullYear() - 2000; //24
+  const hours = estTime.getHours();
+  const minutes = estTime.getMinutes();
+  const dayOfWeek = week[estTime.getDay()];
+
+  // Convert 24-hour format to 12-hour format and set AM/PM
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const formattedHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+
+  // Pad single digit minutes and seconds with a leading zero
+  const paddedMinutes = minutes.toString().padStart(2, "0");
+
+  // Format the date/time string
+  return {
+    date: `${dayOfWeek}, ${month}/${day}`,
+    time: `${formattedHours}:${paddedMinutes} ${ampm}`,
+    dayOfWeek: dayOfWeek,
+  };
 }

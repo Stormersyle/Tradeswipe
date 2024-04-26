@@ -4,12 +4,11 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  height: 9.6vh;
-  width: 70vw;
+  height: 9.9vh;
+  width: 100%;
   background-color: rgba(255, 255, 255, 0.213);
-  margin: 5vh 0;
-  border-radius: 10px;
-  border: 0.2vh solid white;
+  margin: 0 0 5vh 0;
+  border-bottom: 0.2vh solid white;
 }
 /* Navbar takes up 20vh total */
 
@@ -62,7 +61,7 @@
 }
 
 .nav-container {
-  margin: 0 0.5vw;
+  margin: 0 1vw;
 }
 
 #tradeswipe-nav {

@@ -70,8 +70,7 @@
 }
 
 /* dialog: block display */
-#dialog {
-  /* width: fit-content; */
+.popup {
   width: fit-content;
   height: fit-content;
   padding: 2vh 2vw;
@@ -92,17 +91,76 @@
   z-index: 1;
 }
 
-#dialog button {
+.popup button {
   padding-top: 1vh;
   padding-bottom: 1vh;
 }
 
-#dialog input {
+.popup input {
   border: 1px solid black;
 }
 
 .form-title {
   white-space: nowrap;
+}
+
+.help {
+  min-width: 300px;
+  max-width: 80vw;
+}
+
+.claim-button {
+  width: 100%;
+  background-color: rgb(247, 122, 122);
+  color: white;
+}
+
+.cancel-button {
+  width: 100%;
+  background-color: red;
+  color: white;
+}
+
+.order {
+  display: flex;
+  flex-direction: column;
+  /* width: fit-content !important; */
+  width: 150px !important;
+  min-width: fit-content !important;
+  height: fit-content;
+  border: solid white 1px;
+  margin: 10px;
+}
+
+@media only screen and (max-width: 800px) {
+  .order {
+    width: 120px !important;
+    min-width: fit-content !important;
+    margin: 5px !important;
+  }
+}
+
+.order p {
+  white-space: nowrap;
+  margin: 0 1vw;
+}
+
+.order-box {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.select-instructions {
+  margin: 5px;
+  text-align: center;
+}
+
+@media only screen and (max-width: 800px) {
+  .mobile-hide {
+    display: none !important;
+  }
 }
 
 /* editing styling of react-datepicker */

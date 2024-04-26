@@ -75,7 +75,7 @@ const Update_Profile = ({ loggedIn, user, updateUser }) => {
   const submit_profile = () => {
     const new_profile = create_new_profile();
     if (validate_profile(new_profile))
-      post("/api/update_profile", { new_profile: new_profile }).then(async () => {
+      post("/api/update_profile", new_profile).then(async () => {
         await updateUser();
         navigate("/profile");
       });

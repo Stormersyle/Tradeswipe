@@ -4,10 +4,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-import { get, post } from "./utilities.js";
-import ClientSocket from "./client-socket.js";
 import "./index.css";
 import "./utilities.css";
+// important that CSS files come first, before React components! This is so that the "default" CSS files are compiled first, thus component-specific CSS files have higher precedence
+
+import { get, post } from "./utilities.js";
+import ClientSocket from "./client-socket.js";
 
 import Home from "./components/home.js";
 import Nav from "./components/nav.js";
