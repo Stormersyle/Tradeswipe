@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 //use url parameter to scroll to a specific div
 const Info = ({ loggedIn }) => {

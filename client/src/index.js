@@ -6,7 +6,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import "./index.css";
 import "./utilities.css";
-// important that CSS files come first, before React components! This is so that the "default" CSS files are compiled first, thus component-specific CSS files have higher precedence
+// important that index.ccs and utilities.css are imported before React components! This is so that the "default" CSS files are compiled first, thus component-specific CSS files have higher precedence
 
 import { get, post } from "./utilities.js";
 import ClientSocket from "./client-socket.js";
@@ -18,6 +18,7 @@ import Match from "./components/match.js";
 import Info from "./components/info.js";
 import Profile from "./components/profile.js";
 import UpdateProfile from "./components/update_profile.js";
+import History from "./components/view_history.js";
 
 const GOOGLE_CLIENT_ID = "954844909530-hvosmig1l5f9j86o7vn7cmhh6r3sou05.apps.googleusercontent.com";
 
@@ -66,6 +67,7 @@ const App = () => {
             path="/update_profile"
             element={<UpdateProfile user={user} loggedIn={Boolean(user._id)} updateUser={init} />}
           />
+          <Route path="/history" element={<History loggedIn={loggedIn} />} />
         </Routes>
       </GoogleOAuthProvider>
     </BrowserRouter>
