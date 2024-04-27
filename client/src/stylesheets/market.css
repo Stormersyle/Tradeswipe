@@ -110,12 +110,14 @@
 }
 
 .claim-button {
+  display: block;
   width: 100%;
   background-color: rgb(247, 122, 122);
   color: white;
 }
 
 .cancel-button {
+  display: block;
   width: 100%;
   background-color: red;
   color: white;
@@ -224,3 +226,51 @@
 /* .react-datepicker-popper {
     width: 80% !important;
   } */
+
+/* For Match page: */
+.match-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.match {
+  width: 500px !important;
+  max-width: 95% !important;
+  margin: 10px 0;
+  border: solid white 1px;
+}
+
+.match p {
+  margin: 0 10px;
+}
+
+@media only screen and (max-width: 800px) {
+  .match {
+    margin: 6px 0;
+  }
+  .match p {
+    margin: 0 6px;
+  }
+}
+
+.cancel-match {
+  /* background-color: rgb(247, 122, 122); */
+  background-color: red;
+  color: white;
+  display: block;
+  width: 100%;
+  border-top: 1px solid white;
+  border-right: 0.5px solid white;
+}
+
+.finish-match {
+  /* background-color: rgb(97, 167, 110); */
+  background-color: green;
+  color: white;
+  display: block;
+  width: 100%;
+  border-top: 1px solid white;
+  border-left: 0.5px solid white;
+}

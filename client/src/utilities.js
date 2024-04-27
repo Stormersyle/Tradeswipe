@@ -93,6 +93,8 @@ export function convertToDisplay(name) {
     dinner: "Dinner",
     "late night": "Late Night",
     other: "Other",
+    buyer: "Buyer",
+    seller: "Seller",
   };
   return dict[name];
 }

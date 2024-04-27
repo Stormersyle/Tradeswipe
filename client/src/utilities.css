@@ -175,3 +175,8 @@
 .u-hide {
   display: none !important;
 }
+
+.u-hide-but-keep-shape {
+  opacity: 0 !important;
+  cursor: default !important;
+}

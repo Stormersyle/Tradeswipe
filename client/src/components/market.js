@@ -154,9 +154,9 @@ const Help = ({ closeHelp }) => {
   );
 };
 
-//filter obj has keys market, dhall, type, meal
+//given a filter, creates display_order function with this filter
+//filter obj has keys market, dhall, type, meal, and day
 const create_display_order = (filter) => {
-  //creates display_order function with this filter
   const display_order = (order) => {
     if (order.market != filter.market) return null;
     if (filter.mine === "true" && order.mine === "false") return null;
@@ -203,7 +203,12 @@ const create_display_order = (filter) => {
             Cancel
           </button>
         ) : (
-          <button className="claim-button">Claim</button>
+          <button
+            className="claim-button"
+            onClick={() => post("/api/claim_order", { order_id: order._id })}
+          >
+            Claim
+          </button>
         )}
       </div>
     );

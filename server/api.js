@@ -10,6 +10,7 @@ const Transaction = require("./models/transaction.js");
 const router = express.Router(); //mounted on /api
 
 //after populateCurrentUser: req.user is either a Mongoose User doc (if logged in), or null (if logged out)
+//note: req.user._id will be ObjectId type (if logged in!)
 router.use(auth.populateCurrentUser);
 
 //login/logout
@@ -179,10 +180,7 @@ router.get("/orders", auth.ensureLoggedIn, (req, res) => {
   }; //essentially, strip each order of user_id
   Order.find()
     .sort({ date: -1 })
-    .then((orders) => {
-      const stripped_orders = orders.map(strip_function);
-      res.send(stripped_orders);
-    });
+    .then((orders) => res.send(orders.map(strip_function)));
 });
 
 //cancel an order
@@ -192,6 +190,142 @@ router.post("/cancel_order", auth.ensureLoggedIn, async (req, res) => {
   if (!order) return res.send({});
   if (order.user_id === req.user._id) await Order.findByIdAndDelete(order_id);
   SocketManager.emit_to_all("update_order_book");
+  return res.send({});
+});
+
+//claim an order, which makes a match
+router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
+  const { order_id } = req.body;
+  const order = await Order.findById(order_id);
+  if (!order) return res.send({ msg: "claim failed!" });
+  await Order.findByIdAndDelete(order_id);
+  SocketManager.emit_to_all("update_order_book");
+
+  //now: make the match
+  const { user_id, market, type, dhall, price, date, meal } = order;
+  const newMatch = new Match({
+    buyer_id: type === "buy" ? user_id : req.user._id,
+    seller_id: type === "sell" ? user_id : req.user._id,
+    ordered_by: type === "buy" ? "buyer" : "seller",
+    buyer_finished: false,
+    seller_finished: false,
+    market: market,
+    dhall: dhall,
+    price: price,
+    date: date,
+    meal: meal,
+  });
+  await newMatch.save();
+  SocketManager.emit_to_user(user_id, "update_matches");
+  SocketManager.emit_to_user(req.user._id, "update_matches");
+  return res.send({});
+});
+
+//get user's matches
+router.get("/matches", auth.ensureLoggedIn, (req, res) => {
+  const process_match = (match) => {
+    return {
+      _id: match._id,
+      my_role: req.user._id.toString() === match.buyer_id ? "buyer" : "seller",
+      buyer_finished: match.buyer_finished,
+      seller_finished: match.seller_finished,
+      market: match.market,
+      dhall: match.dhall,
+      price: match.price,
+      date: match.date,
+      meal: match.meal,
+    };
+  };
+  Match.find()
+    .sort({ date: 1 })
+    .then((matches) => res.send(matches.map(process_match)));
+});
+
+//get info about the person we're matched with
+router.get("/other_person", auth.ensureLoggedIn, async (req, res) => {
+  const { match_id } = req.query;
+  const match = await Match.findById(match_id);
+  if (!match) return res.send({});
+  let other_person;
+  if (req.user._id.toString() === match.buyer_id) {
+    //user is buyer
+    other_person = await User.findById(match.seller_id);
+  } else {
+    //user is seller
+    other_person = await User.findById(match.buyer_id);
+  }
+  return res.send({
+    name: other_person.name,
+    phone_number: other_person.phone_number,
+    venmo_username: other_person.venmo_username,
+    directions: other_person.directions,
+  });
+});
+
+//cancel match
+//if match is canceled by the claimer: then the order goes back onto the market
+//only exception: if it's a reserve order and the date has already passed
+router.post("/cancel_match", auth.ensureLoggedIn, async (req, res) => {
+  const { match_id } = req.body;
+  const match = Match.findById(match_id);
+  if (!match) return res.send({});
+  await Match.findByIdAndDelete(match_id);
+
+  //now, put it back on the market if the claimer canceled
+
+  const canceled_by = req.user._id.toString() === match.buyer_id ? "buyer" : "seller";
+  if (canceled_by !== match.ordered_by) {
+    const currentDate = new Date();
+    if (match.market === "reserve" && match.date < currentDate) return res.send({});
+    const newOrder = new Order({
+      user_id: match.ordered_by === "buyer" ? match.buyer_id : match.seller_id,
+      market: match.market,
+      type: match.ordered_by === "buyer" ? "buy" : "sell",
+      dhall: match.dhall,
+      price: match.price,
+      date: match.date,
+      meal: match.meal,
+    });
+    await newOrder.save();
+  }
+  return res.send({});
+});
+
+// buyer_id: String,
+// seller_id: String,
+// meal: String, //breakfast, lunch, or dinner
+// dhall: String, //Maseeh, Next, NV, Simmons, Baker, MCC
+// price: Number,
+// date: Date,
+//finish match
+router.post("/finish_match", auth.ensureLoggedIn, async (req, res) => {
+  const { match_id } = req.body;
+  const match = await Match.findById(match_id);
+  if (!match) return res.send({});
+  let { buyer_finished, seller_finished } = match;
+  if (req.user._id.toString() === match.buyer_id) {
+    await Match.updateOne({ _id: match_id }, { $set: { buyer_finished: true } });
+    buyer_finished = true;
+  } else {
+    await Match.updateOne({ _id: match_id }, { $set: { seller_finished: true } });
+    seller_finished = true;
+  }
+  if (buyer_finished && seller_finished) {
+    const newTransaction = new Transaction({
+      buyer_id: match.buyer_id,
+      seller_id: match.seller_id,
+      meal: match.meal,
+      dhall: match.dhall,
+      price: match.price,
+      date: match.date,
+    });
+    await newTransaction.save();
+    await Match.findByIdAndDelete(match_id);
+  }
+  SocketManager.emit_to_user(match.buyer_id, "update_matches");
+  SocketManager.emit_to_user(match.seller_id, "update_matches");
+  SocketManager.emit_to_user(match.buyer_id, "update_transactions");
+  SocketManager.emit_to_user(match.seller_id, "update_transactions");
   return res.send({});
 });
 
