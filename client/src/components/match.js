@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { get, post, convertToDisplay, getDateTime } from "../utilities.js";
 import Waiting from "./waiting.js";
 import NotLoggedIn from "./not_logged_in.js";
@@ -41,14 +41,9 @@ const MatchInfo = ({ match_id, my_role }) => {
   const [person, setPerson] = useState(null); //person = the user we're matched with
 
   useEffect(() => {
-    const init = () => {
-      get("/api/other_person", { match_id: match_id }).then((other_person) =>
-        setPerson(other_person)
-      );
-    };
-    init();
-    ClientSocket.listen("match_update", init); //i.e. the person we match with updates their profile
-    return () => ClientSocket.remove_listener("match_update", init);
+    get("/api/other_person", { match_id: match_id }).then((other_person) =>
+      setPerson(other_person)
+    );
   }, []);
 
   if (!person)
@@ -70,7 +65,7 @@ const MatchInfo = ({ match_id, my_role }) => {
   );
 };
 
-//given a filter, creates display_order function with this filter
+//given a filter, creates display_match function with this filter
 //filter: properties market, dhall, meal
 const create_display_match = (filter) => {
   const display_match = (match) => {

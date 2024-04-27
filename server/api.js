@@ -89,6 +89,17 @@ router.post("/update_profile", auth.ensureLoggedIn, validate_profile, async (req
       },
     }
   );
+
+  //we also need to tell all of our matches to update their info
+  const extract_other_person = (match) => {
+    if (match.buyer_id === req.user._id.toString()) return match.seller_id;
+    else return match.buyer_id;
+  };
+  const matches = await Match.find({
+    $or: [{ buyer_id: req.user._id.toString() }, { seller_id: req.user._id.toString() }],
+  });
+  const matched_user_ids = matches.map(extract_other_person); //array of IDs of ppl we're matched with
+  for (let ID of matched_user_ids) SocketManager.emit_to_user(ID, "update_matches");
   res.status(200).send({});
 });
 
@@ -225,7 +236,7 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
 router.get("/matches", auth.ensureLoggedIn, (req, res) => {
   const process_match = (match) => {
     return {
-      _id: match._id,
+      _id: match._id, //converts to string when sending through HTTP
       my_role: req.user._id.toString() === match.buyer_id ? "buyer" : "seller",
       buyer_finished: match.buyer_finished,
       seller_finished: match.seller_finished,
@@ -236,10 +247,13 @@ router.get("/matches", auth.ensureLoggedIn, (req, res) => {
       meal: match.meal,
     };
   };
-  Match.find()
+  Match.find({
+    $or: [{ buyer_id: req.user._id.toString() }, { seller_id: req.user._id.toString() }],
+  })
     .sort({ date: 1 })
     .then((matches) => res.send(matches.map(process_match)));
-});
+  return;
+}); //sort matches from earliest to latest
 
 //get info about the person we're matched with
 router.get("/other_person", auth.ensureLoggedIn, async (req, res) => {
@@ -327,6 +341,24 @@ router.post("/finish_match", auth.ensureLoggedIn, async (req, res) => {
   SocketManager.emit_to_user(match.buyer_id, "update_transactions");
   SocketManager.emit_to_user(match.seller_id, "update_transactions");
   return res.send({});
+});
+
+router.get("/transaction_history", auth.ensureLoggedIn, (req, res) => {
+  const process_transaction = (transaction) => {
+    return {
+      my_role: req.user._id.toString() === transaction.buyer_id ? "buyer" : "seller",
+      meal: transaction.meal,
+      dhall: transaction.dhall,
+      price: transaction.price,
+      date: transaction.date,
+    };
+  };
+  Transaction.find({
+    $or: [{ buyer_id: req.user._id.toString() }, { seller_id: req.user._id.toString() }],
+  })
+    .sort({ date: -1 })
+    .then((transactions) => res.send(transactions.map(process_transaction)));
+  return; //sort transactions from latest to oldest
 });
 
 module.exports = router;
