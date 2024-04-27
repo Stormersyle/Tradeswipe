@@ -125,34 +125,39 @@ const get_meal = (date) => {
   }
 }; //revise later
 
-const process_order = async (req, res, next) => {
+const validate_order = async (req, res, next) => {
   const { market, type, date, dhall, price, quantity } = req.body;
   const user_doc = await User.findById(req.user._id);
   if (type === "buy") {
-    if (!user_doc.is_buyer) {
-      res.send({ msg: "Not an authorized buyer! Please activate in your profile." });
-      return;
-    }
+    if (!user_doc.is_buyer)
+      return res.send({ msg: "Not an authorized buyer! Please activate in your profile." });
   } else {
-    if (!user_doc.is_seller) {
-      res.send({ msg: "Not an authorized seller! Please activate in your profile." });
-      return;
-    }
+    if (!user_doc.is_seller)
+      return res.send({ msg: "Not an authorized seller! Please activate in your profile." });
   }
   req.body.price = Number(Number(price).toFixed(2));
   req.body.quantity = Number(Number(quantity).toFixed(0));
   if (
+    (!req.body.price && req.body.price !== 0) || //check if it's NaN
+    (!req.body.quantity && req.body.quantity !== 0) || //check if it's NaN
     req.body.price < 0 ||
     req.body.price > 20 ||
-    req.body.quantity < 0 ||
-    req.body.quantity > 10 ||
-    (!req.body.price && req.body.price !== 0) || //check if it's NaN
-    (!req.body.quantity && req.body.quantity !== 0) //check if it's NaN
-  ) {
-    res.send({ msg: "bad price/quantity" });
-    return;
+    req.body.quantity < 1 ||
+    req.body.quantity > 10
+  )
+    return res.send({
+      msg: "Bad price/quantity! Price must be a number from 0 through 20, and quantity must be an integer from 1 through 10.",
+    });
+  if (market === "reserve") {
+    const today = new Date();
+    const thirtyDaysLater = new Date(Date.now() + 30 * 24 * 3600 * 1000);
+    if (date < today) return res.send({ msg: "Your reservation order must be for the future!" });
+    if (date > thirtyDaysLater)
+      return res.send({
+        msg: "Your reservation order cannot be more than 30 days from today.",
+      });
   }
-  if (market === "live") req.body.date = new Date(Date.now());
+  if (market === "live") req.body.date = new Date();
   if (type === "buy") req.body.quantity = 1;
   req.body.meal = get_meal(req.body.date);
   req.body.user_id = req.user._id;
@@ -161,7 +166,7 @@ const process_order = async (req, res, next) => {
 };
 
 //place order
-router.post("/order", auth.ensureLoggedIn, process_order, async (req, res) => {
+router.post("/order", auth.ensureLoggedIn, validate_order, async (req, res) => {
   // req.body has: {user_id, market, type, date, dhall, price, meal, quantity}
   const quantity = req.body.quantity;
   // delete req.body.quantity;
