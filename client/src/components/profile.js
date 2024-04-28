@@ -2,9 +2,84 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { get } from "../utilities.js";
 import ClientSocket from "../client-socket.js";
+import { UpdateProfile, UpdateNotifs } from "./update_profile.js";
 
 import NotLoggedIn from "./not_logged_in.js";
 import "../stylesheets/profile.css";
+
+// User schema:
+//     name: String,
+//     email: String,
+//     googleid: String,
+//     phone_number: { type: String, default: "" },
+//     venmo_username: { type: String, default: "" },
+//     is_buyer: { type: Boolean, default: false },
+//     is_seller: { type: Boolean, default: false },
+//     directions: {type: String, default: ""}
+
+const Profile = ({ user, openUpdateProfile }) => {
+  return (
+    <div className="profile-box">
+      <p className="u-l u-flex u-justify-center">Profile</p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Name:</b> {user.name}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Email:</b> {user.email ? user.email : "N/A"}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Phone:</b> {user.phone_number ? user.phone_number : "N/A"}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Venmo Username:</b> {user.venmo_username ? user.venmo_username : "N/A"}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Buyer Enabled:</b> {user.is_buyer ? "Yes" : "No"}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Seller Enabled:</b> {user.is_seller ? "Yes" : "No"}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Directions:</b> {user.directions ? user.directions : "N/A"}
+      </p>
+      <br />
+      <div className="u-flex u-justify-center">
+        <button className="default-button" onClick={openUpdateProfile}>
+          <p className="u-mm u-block">Update Profile</p>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Notifs = ({ user, openUpdateNotifs }) => {
+  return (
+    <div className="profile-box">
+      <p className="u-l u-flex u-justify-center">Notification Settings</p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Live Match Notifications:</b> {user.live_notifs ? "On" : "Off"}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Reserve Match Notifications:</b> {user.reserve_notifs ? "On" : "Off"}
+      </p>
+      <br />
+      <div className="u-flex u-justify-center">
+        <button className="default-button" onClick={openUpdateNotifs}>
+          <p className="u-mm u-block">Update Notifications</p>
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const StatsBox = () => {
   const navigate = useNavigate();
@@ -12,7 +87,10 @@ const StatsBox = () => {
 
   useEffect(() => {
     const init = () => {
-      get("/api/user_stats").then((stats) => setStats(stats));
+      get("/api/user_stats").then((stats) => {
+        console.log(stats);
+        setStats(stats);
+      });
     };
     init();
     ClientSocket.listen("update_transactions", init);
@@ -21,7 +99,7 @@ const StatsBox = () => {
 
   if (!stats) {
     return (
-      <div id="stats-box">
+      <div className="profile-box">
         <p className="u-l u-flex u-justify-center">Transaction History</p>
         <div className="linebreak-1"></div>
         <p className="u-mm">Loading Stats</p>
@@ -30,7 +108,7 @@ const StatsBox = () => {
   }
 
   return (
-    <div id="stats-box">
+    <div className="profile-box">
       <p className="u-l u-flex u-justify-center">Transaction History</p>
       <div className="linebreak-1"></div>
       <p className="u-mm">
@@ -54,61 +132,34 @@ const StatsBox = () => {
   );
 };
 
-// User schema:
-//     name: String,
-//     email: String,
-//     googleid: String,
-//     phone_number: { type: String, default: "" },
-//     venmo_username: { type: String, default: "" },
-//     is_buyer: { type: Boolean, default: false },
-//     is_seller: { type: Boolean, default: false },
-//     directions: {type: String, default: ""}
+const ProfilePage = ({ loggedIn, user, updateUser }) => {
+  const [profile, setProfile] = useState("display"); //"display" and "update"
+  const [notifs, setNotifs] = useState("display"); //"display" and "update"
 
-const Profile = ({ loggedIn, user }) => {
-  const navigate = useNavigate();
+  const openUpdateProfile = () => setProfile("update");
+  const openUpdateNotifs = () => setNotifs("update");
+  const closeUpdateProfile = () => setProfile("display");
+  const closeUpdateNotifs = () => setNotifs("display");
 
   if (!loggedIn) return <NotLoggedIn />;
 
   return (
     <div className="page-container styled-page-container">
-      <div id="profile-box">
-        <p className="u-l u-flex u-justify-center">Profile</p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Name:</b> {user.name}
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Email:</b> {user.email ? user.email : "N/A"}
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Phone:</b> {user.phone_number ? user.phone_number : "N/A"}
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Venmo Username:</b> {user.venmo_username ? user.venmo_username : "N/A"}
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Buyer Enabled:</b> {user.is_buyer ? "Yes" : "No"}
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Seller Enabled:</b> {user.is_seller ? "Yes" : "No"}
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Directions:</b> {user.directions ? user.directions : "N/A"}
-        </p>
-        <br />
-        <div className="u-flex u-justify-center">
-          <button className="default-button" onClick={() => navigate("/update_profile")}>
-            <p className="u-mm u-block">Update Profile</p>
-          </button>
-        </div>
-      </div>
+      {profile === "display" ? (
+        <Profile user={user} openUpdateProfile={openUpdateProfile} />
+      ) : (
+        <UpdateProfile
+          user={user}
+          updateUser={updateUser}
+          closeUpdateProfile={closeUpdateProfile}
+        />
+      )}
       <br />
+      {notifs === "display" ? (
+        <Notifs user={user} openUpdateNotifs={openUpdateNotifs} />
+      ) : (
+        <UpdateNotifs user={user} updateUser={updateUser} closeUpdateNotifs={closeUpdateNotifs} />
+      )}
       <br />
       <StatsBox />
       <br />
@@ -116,4 +167,4 @@ const Profile = ({ loggedIn, user }) => {
   );
 };
 
-export default Profile;
+export default ProfilePage;

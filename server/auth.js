@@ -67,21 +67,16 @@ function populateCurrentUser(req, res, next) {
   // if (req.user) console.log(typeof req.user, req.user);
   next();
 }
-//safe to use req.user in the backend, because this function sets req.user based on what google told us it was. user can't impersonate someone else unless they already have the details
-
-//we populate current user for all api requests: so server always has up-to-date info on whether user is logged in or logged out
-//when logged in: api sees req.user = obj; when logged out, api sees req.user = null
+//CLIENT DOES NOT HAVE ACCESS TO REQ.SESSION!
+//so it's perfectly safe to directly call req.user in the server. that is guaranteed to be the actual user object. (but maybe out of date, since we can update profile)
 
 function ensureLoggedIn(req, res, next) {
   if (!req.user) {
     return res.send({ err: "not logged in" });
   }
-  User.findById(req.user._id).then((user_doc) => {
-    if (!user_doc) return res.send({ err: "invalid user" });
-  });
   next();
 }
-// auth.ensureLoggedIn also ensures user is valid
+// auth.ensureLoggedIn also ensures client is logged in and user is valid
 //doesn't send an error
 
 module.exports = {

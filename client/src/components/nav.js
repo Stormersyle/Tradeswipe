@@ -113,11 +113,6 @@ const HamburgerMenu = ({ loggedIn, handleLogout }) => {
             </a>
           </li>
           <li>
-            <a className="menu__item" href="/profile">
-              Profile
-            </a>
-          </li>
-          <li>
             <a className="menu__item" href="/market">
               Market
             </a>
@@ -130,6 +125,11 @@ const HamburgerMenu = ({ loggedIn, handleLogout }) => {
           <li>
             <a className="menu__item" href="/info">
               Info
+            </a>
+          </li>
+          <li>
+            <a className="menu__item" href="/profile">
+              Profile
             </a>
           </li>
           <li>

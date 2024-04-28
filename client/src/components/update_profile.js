@@ -1,9 +1,73 @@
 import React, { useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { post } from "../utilities.js";
 
-import NotLoggedIn from "./not_logged_in.js";
 import "../stylesheets/profile.css";
+
+const UpdateNotifs = ({ user, updateUser, closeUpdateNotifs }) => {
+  const liveRef = useRef(null),
+    reserveRef = useRef(null);
+
+  const submit_notifs = () => {
+    if (liveRef.current && reserveRef.current) {
+      post("/api/update_notifs", {
+        live_notifs: liveRef.current.checked,
+        reserve_notifs: reserveRef.current.checked,
+      }).then(() => {
+        updateUser();
+        closeUpdateNotifs();
+      });
+    }
+  };
+
+  return (
+    <div className="profile-box">
+      <p className="u-l u-flex u-justify-center">Notification Settings</p>
+      <div className="linebreak-1"></div>
+      <div className="input-row">
+        <label htmlFor="live-notifs">
+          <b>Live Match Notifications:&nbsp;</b>
+        </label>
+        {user.live_notifs ? (
+          <input
+            id="live-notifs"
+            type="checkbox"
+            ref={liveRef}
+            defaultChecked={true}
+            className="checkbox"
+          />
+        ) : (
+          <input id="live-notifs" type="checkbox" ref={liveRef} className="checkbox" />
+        )}
+      </div>
+      <div className="linebreak-1"></div>
+      <div className="input-row">
+        <label htmlFor="reserve-notifs">
+          <b>Reserve Match Notifications:&nbsp;</b>
+        </label>
+        {user.reserve_notifs ? (
+          <input
+            id="reserve-notifs"
+            type="checkbox"
+            ref={reserveRef}
+            defaultChecked={true}
+            className="checkbox"
+          />
+        ) : (
+          <input id="reserve-notifs" type="checkbox" ref={reserveRef} className="checkbox" />
+        )}
+      </div>
+      <br />
+      <div className="u-flex u-width-fill u-justify-center u-align-center">
+        <button onClick={closeUpdateNotifs} className="default-button">
+          <p className="u-mm u-block">Cancel</p>
+        </button>
+        <button onClick={submit_notifs} className="default-button">
+          <p className="u-mm u-block">Submit</p>
+        </button>
+      </div>
+    </div>
+  );
+};
 
 //chat gpt generated regex, may or may not be correct ...
 const validate_profile = (profile) => {
@@ -42,16 +106,13 @@ const validate_profile = (profile) => {
 //         email: String, phone_number: String, venmo_username: String, googleid: String, directions: String}
 //updateUser = func(). Tells App to call "/api/who_am_i" (so that updated user is stored)
 
-const Update_Profile = ({ loggedIn, user, updateUser }) => {
-  const navigate = useNavigate();
+const UpdateProfile = ({ user, updateUser, closeUpdateProfile }) => {
   const nameRef = useRef(null),
     phoneRef = useRef(null),
     buyerRef = useRef(null),
     sellerRef = useRef(null),
     venmoRef = useRef(null),
     directionsRef = useRef(null);
-
-  if (!loggedIn) return <NotLoggedIn />;
 
   const { name, is_buyer, is_seller, email, phone_number, venmo_username, directions } = user;
   const create_new_profile = () => {
@@ -75,104 +136,92 @@ const Update_Profile = ({ loggedIn, user, updateUser }) => {
   const submit_profile = () => {
     const new_profile = create_new_profile();
     if (validate_profile(new_profile))
-      post("/api/update_profile", new_profile).then(async () => {
-        await updateUser();
-        navigate("/profile");
+      post("/api/update_profile", new_profile).then(() => {
+        updateUser();
+        closeUpdateProfile();
       });
   };
 
   return (
-    <div className="page-container styled-page-container">
-      <div id="update-box">
-        <p className="u-l u-flex u-justify-center">Update Profile</p>
-        <div className="linebreak-1"></div>
-        <div className="input-row">
-          <label htmlFor="name">
-            <b>Name:&nbsp;</b>
-          </label>
-          <input id="name" type="text" defaultValue={name} ref={nameRef} />
-        </div>
-        <div className="linebreak-1"></div>
-        <p>
-          <b>Email:&nbsp;</b> {email}
-        </p>
-        <div className="linebreak-1"></div>
-        <div className="input-row">
-          <label htmlFor="phone_number">
-            <b>Phone:&nbsp;</b>
-          </label>
-          <input id="phone_number" type="text" defaultValue={phone_number} ref={phoneRef} />
-        </div>
-        <div className="linebreak-1"></div>
-        <div className="input-row">
-          <label htmlFor="venmo_username">
-            <b>Venmo Username:&nbsp;</b>
-          </label>
+    <div className="profile-box">
+      <p className="u-l u-flex u-justify-center">Profile</p>
+      <div className="linebreak-1"></div>
+      <div className="input-row">
+        <label htmlFor="name">
+          <b>Name:&nbsp;</b>
+        </label>
+        <input id="name" type="text" defaultValue={name} ref={nameRef} />
+      </div>
+      <div className="linebreak-1"></div>
+      <p>
+        <b>Email:&nbsp;</b> {email}
+      </p>
+      <div className="linebreak-1"></div>
+      <div className="input-row">
+        <label htmlFor="phone_number">
+          <b>Phone:&nbsp;</b>
+        </label>
+        <input id="phone_number" type="text" defaultValue={phone_number} ref={phoneRef} />
+      </div>
+      <div className="linebreak-1"></div>
+      <div className="input-row">
+        <label htmlFor="venmo_username">
+          <b>Venmo Username:&nbsp;</b>
+        </label>
+        <input id="venmo_username" type="text" defaultValue={venmo_username} ref={venmoRef}></input>
+      </div>
+      <div className="linebreak-1"></div>
+      <div className="input-row">
+        <label htmlFor="is_buyer">
+          <b>Buyer Enabled:&nbsp;</b>
+        </label>
+        {is_buyer ? (
           <input
-            id="venmo_username"
-            type="text"
-            defaultValue={venmo_username}
-            ref={venmoRef}
-          ></input>
-        </div>
-        <div className="linebreak-1"></div>
-        <div className="input-row">
-          <label htmlFor="is_buyer">
-            <b>Buyer Enabled:&nbsp;</b>
-          </label>
-          {is_buyer ? (
-            <input
-              id="is_buyer"
-              type="checkbox"
-              ref={buyerRef}
-              defaultChecked={true}
-              className="checkbox"
-            />
-          ) : (
-            <input id="is_buyer" type="checkbox" ref={buyerRef} className="checkbox" />
-          )}
-        </div>
-        <div className="linebreak-1"></div>
-        <div className="input-row">
-          <label htmlFor="is_seller">
-            <b>Seller Enabled:&nbsp;</b>
-          </label>
-          {is_seller ? (
-            <input
-              id="is_seller"
-              type="checkbox"
-              ref={sellerRef}
-              defaultChecked={true}
-              className="checkbox"
-            />
-          ) : (
-            <input id="is_seller" type="checkbox" ref={sellerRef} className="checkbox" />
-          )}
-        </div>
-        <div className="linebreak-1"></div>
-        <div className="input-col">
-          <label htmlFor="directions">
-            <b>Directions:&nbsp;</b>
-          </label>
-          <textarea
-            id="directions"
-            rows="3"
-            ref={directionsRef}
-            defaultValue={directions}
-          ></textarea>
-        </div>
-        <br />
-        <div className="u-flex u-width-fill u-justify-center u-align-center">
-          <button onClick={() => navigate("/profile")} className="default-button">
-            <p className="u-mm u-block">Cancel</p>
-          </button>
-          <button onClick={submit_profile} className="default-button">
-            <p className="u-mm u-block">Submit</p>
-          </button>
-        </div>
+            id="is_buyer"
+            type="checkbox"
+            ref={buyerRef}
+            defaultChecked={true}
+            className="checkbox"
+          />
+        ) : (
+          <input id="is_buyer" type="checkbox" ref={buyerRef} className="checkbox" />
+        )}
+      </div>
+      <div className="linebreak-1"></div>
+      <div className="input-row">
+        <label htmlFor="is_seller">
+          <b>Seller Enabled:&nbsp;</b>
+        </label>
+        {is_seller ? (
+          <input
+            id="is_seller"
+            type="checkbox"
+            ref={sellerRef}
+            defaultChecked={true}
+            className="checkbox"
+          />
+        ) : (
+          <input id="is_seller" type="checkbox" ref={sellerRef} className="checkbox" />
+        )}
+      </div>
+      <div className="linebreak-1"></div>
+      <div className="input-col">
+        <label htmlFor="directions">
+          <b>Directions:&nbsp;</b>
+        </label>
+        <textarea id="directions" rows="3" ref={directionsRef} defaultValue={directions}></textarea>
+      </div>
+      <br />
+      <div className="u-flex u-width-fill u-justify-center u-align-center">
+        <button onClick={closeUpdateProfile} className="default-button">
+          <p className="u-mm u-block">Cancel</p>
+        </button>
+        <button onClick={submit_profile} className="default-button">
+          <p className="u-mm u-block">Submit</p>
+        </button>
       </div>
     </div>
   );
 };
 
-export default Update_Profile;
+export { UpdateProfile, UpdateNotifs };

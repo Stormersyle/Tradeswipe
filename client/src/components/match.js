@@ -169,20 +169,20 @@ const MatchPage = ({ loggedIn }) => {
           <div className="u-flex-center">
             {market === "live" ? (
               <button className="filter-button live-button selected" onClick={setLive}>
-                <p className="u-mm">Live Market</p>
+                <p className="u-mm">&nbsp;&nbsp;&nbsp;Live&nbsp;&nbsp;&nbsp;</p>
               </button>
             ) : (
               <button className="filter-button live-button deselected" onClick={setLive}>
-                <p className="u-mm">Live Market</p>
+                <p className="u-mm">&nbsp;&nbsp;&nbsp;Live&nbsp;&nbsp;&nbsp;</p>
               </button>
             )}
             {market === "reserve" ? (
               <button className="filter-button reserve-button selected" onClick={setReserve}>
-                <p className="u-mm">Reservations</p>
+                <p className="u-mm">Reserve</p>
               </button>
             ) : (
               <button className="filter-button reserve-button deselected" onClick={setReserve}>
-                <p className="u-mm">Reservations</p>
+                <p className="u-mm">Reserve</p>
               </button>
             )}
           </div>

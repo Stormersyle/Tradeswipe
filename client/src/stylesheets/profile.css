@@ -1,39 +1,15 @@
 /* for profile page */
-#profile-box {
+.profile-box {
   /* width: fit-content;
     min-width: 30vw; */
-  width: 40vw;
-  padding: 2vh 2vw;
-  border: 1px solid white;
-  border-radius: 10px;
-}
-
-#update-box {
-  /* width: fit-content;
-    min-width: 30vw; */
-  width: 40vw;
-  padding: 2vh 2vw;
-  border: 1px solid white;
-  border-radius: 10px;
-}
-
-#stats-box {
-  /* width: fit-content;
-    min-width: 30vw; */
-  width: 40vw;
-  padding: 2vh 2vw;
-  border: 1px solid white;
-  border-radius: 10px;
+  width: 40vw !important;
+  padding: 2vh 2vw !important;
+  border: 1px solid white !important;
+  border-radius: 10px !important;
 }
 
 @media only screen and (max-width: 800px) {
-  #profile-box {
-    width: 70vw;
-  }
-  #update-box {
-    width: 70vw;
-  }
-  #stats-box {
-    width: 70vw;
+  .profile-box {
+    width: 70vw !important;
   }
 }

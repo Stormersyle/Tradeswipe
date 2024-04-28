@@ -126,6 +126,15 @@ const get_meal = (date) => {
   }
 }; //revise later
 
+//update notification settings
+router.post("/update_notifs", auth.ensureLoggedIn, (req, res) => {
+  User.updateOne(
+    { _id: req.user._id },
+    { $set: { live_notifs: req.body.live_notifs, reserve_notifs: req.body.reserve_notifs } }
+  ).then(() => res.send({}));
+});
+
+//next functions: for placing order
 const validate_order = async (req, res, next) => {
   const { market, type, date, dhall, price, quantity } = req.body;
   if (!(market && type && date && dhall && price && quantity))
@@ -212,14 +221,21 @@ router.post("/cancel_order", auth.ensureLoggedIn, async (req, res) => {
 
 //claim an order, which makes a match
 router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
+  //forst, validate order and user
   const { order_id } = req.body;
   const order = await Order.findById(order_id);
   if (!order) return res.send({ msg: "claim failed!" });
-  await Order.findByIdAndDelete(order_id);
-  SocketManager.emit_to_all("update_order_book");
+  const user = await User.findById(req.user._id);
+  if (order.type === "buy" && !user.is_seller)
+    //claim a buy order; i.e. we're selling
+    return res.send({ msg: "Not authorized to sell! Please activate in your profile" });
+  if (order.type === "sell" && !user.is_buyer)
+    return res.send({ msg: "Not authorized to  buy! Please activate in your profile" });
 
   //now: make the match
   const { user_id, market, type, dhall, price, date, meal } = order;
+  await Order.findByIdAndDelete(order_id);
+  SocketManager.emit_to_all("update_order_book");
   const newMatch = new Match({
     buyer_id: type === "buy" ? user_id : req.user._id,
     seller_id: type === "sell" ? user_id : req.user._id,
@@ -233,8 +249,24 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
     meal: meal,
   });
   await newMatch.save();
-  SocketManager.emit_to_user(user_id, "update_matches");
-  SocketManager.emit_to_user(req.user._id.toString(), "update_matches");
+  SocketManager.emit_to_user(newMatch.buyer_id, "update_matches");
+  SocketManager.emit_to_user(newMatch.seller_id, "update_matches");
+
+  //now make notifications
+  const buyer = await User.findById(newMatch.buyer_id);
+  const seller = await User.findById(newMatch.seller_id);
+  if (newMatch.market === "live") {
+    if (seller.live_notifs)
+      SocketManager.emit_to_user(newMatch.seller_id, "notif", "New live match!");
+    if (buyer.live_notifs)
+      SocketManager.emit_to_user(newMatch.buyer_id, "notif", "New live match!");
+  } else {
+    if (seller.reserve_notifs)
+      SocketManager.emit_to_user(newMatch.seller_id, "notif", "New reservation match!");
+    if (buyer.reserve_notifs)
+      SocketManager.emit_to_user(newMatch.buyer_id, "notif", "New reservation match!");
+  }
+
   return res.send({});
 });
 
@@ -293,8 +325,23 @@ router.post("/cancel_match", auth.ensureLoggedIn, async (req, res) => {
   SocketManager.emit_to_user(match.buyer_id, "update_matches");
   SocketManager.emit_to_user(match.seller_id, "update_matches");
 
-  //now, put it back on the market if the claimer canceled
+  //notify the other person (if necessary) of the match being cancelled
   const canceled_by = req.user._id.toString() === match.buyer_id ? "buyer" : "seller";
+  const buyer = await User.findById(match.buyer_id);
+  const seller = await User.findById(match.seller_id);
+  if (match.market === "live") {
+    if (seller.live_notifs)
+      SocketManager.emit_to_user(match.seller_id, "notif", "Live match canceled!");
+    if (buyer.live_notifs)
+      SocketManager.emit_to_user(match.buyer_id, "notif", "Live match canceled!");
+  } else {
+    if (seller.reserve_notifs)
+      SocketManager.emit_to_user(match.seller_id, "notif", "Reservation match canceled!");
+    if (buyer.reserve_notifs)
+      SocketManager.emit_to_user(match.buyer_id, "notif", "Reservation match canceled!");
+  }
+
+  //now, put the order back on the market if the claimer canceled
   if (canceled_by !== match.ordered_by) {
     if (match.market === "reserve" && match.date.getTime() < Date.now()) return res.send({});
     const newOrder = new Order({
@@ -312,13 +359,7 @@ router.post("/cancel_match", auth.ensureLoggedIn, async (req, res) => {
   return res.send({});
 });
 
-// buyer_id: String,
-// seller_id: String,
-// meal: String, //breakfast, lunch, or dinner
-// dhall: String, //Maseeh, Next, NV, Simmons, Baker, MCC
-// price: Number,
-// date: Date,
-//finish match
+//when a user clicks "finish" on their match
 router.post("/finish_match", auth.ensureLoggedIn, async (req, res) => {
   const { match_id } = req.body;
   const match = await Match.findById(match_id);
@@ -335,6 +376,7 @@ router.post("/finish_match", auth.ensureLoggedIn, async (req, res) => {
     const newTransaction = new Transaction({
       buyer_id: match.buyer_id,
       seller_id: match.seller_id,
+      market: match.market,
       meal: match.meal,
       dhall: match.dhall,
       price: match.price,
@@ -354,6 +396,7 @@ router.get("/transaction_history", auth.ensureLoggedIn, (req, res) => {
   const process_transaction = (transaction) => {
     return {
       my_role: req.user._id.toString() === transaction.buyer_id ? "buyer" : "seller",
+      market: transaction.market,
       meal: transaction.meal,
       dhall: transaction.dhall,
       price: transaction.price,
@@ -369,7 +412,7 @@ router.get("/transaction_history", auth.ensureLoggedIn, (req, res) => {
 });
 
 router.get("/user_stats", auth.ensureLoggedIn, async (req, res) => {
-  const meal_price = { breakfast: 10.85, lunch: 17, dinner: 19.95, "late night": 19.95 };
+  const meal_price = { breakfast: 10.85, lunch: 17, dinner: 19.95, "late night": 19.95, other: 15 };
   const my_transactions = await Transaction.find({
     $or: [{ buyer_id: req.user._id.toString() }, { seller_id: req.user._id.toString() }],
   });
@@ -385,6 +428,7 @@ router.get("/user_stats", auth.ensureLoggedIn, async (req, res) => {
       money_saved += transaction.price;
     }
   }
+  // console.log("money saved", money_saved);
   return res.send({ bought: bought, sold: sold, money_saved: money_saved });
 });
 

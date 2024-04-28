@@ -83,7 +83,7 @@ const History = ({ loggedIn }) => {
             >
               <option value="any">Any</option>
               <option value="live">Live</option>
-              <option value="reserve">Reservation</option>
+              <option value="reserve">Reserve</option>
             </select>
           </div>
           <div className="dropdown-menu u-flex u-width-fit">
@@ -123,7 +123,7 @@ const History = ({ loggedIn }) => {
         </div>
         <br />
         <HistoryBox market={market} dhall={dhall} meal={meal} />
-        <br />
+        <div className="linebreak-1"></div>
         <div className="u-flex u-justify-center">
           <button className="default-button" onClick={() => navigate("/profile")}>
             <p className="u-mm">Return to Profile</p>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, StrictMode } from "react";
+import React, { useState, useEffect, StrictMode, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import jwt_decode from "jwt-decode";
@@ -17,7 +17,6 @@ import Market from "./components/market.js";
 import Match from "./components/match.js";
 import Info from "./components/info.js";
 import Profile from "./components/profile.js";
-import UpdateProfile from "./components/update_profile.js";
 import History from "./components/view_history.js";
 
 const GOOGLE_CLIENT_ID = "954844909530-hvosmig1l5f9j86o7vn7cmhh6r3sou05.apps.googleusercontent.com";
@@ -26,12 +25,18 @@ const App = () => {
   const [user, setUser] = useState({}); //user = {} if logged out; full object if logged in
   //to checked if logged in: check if user._id is truthy or falsy
 
+  const notify = useCallback((msg) => {
+    alert(msg);
+  }, []);
+
   const init = () => {
     get("/api/who_am_i").then((user_doc) => setUser(user_doc));
   };
 
   useEffect(() => {
+    ClientSocket.listen("notif", notify);
     init();
+    return () => ClientSocket.remove_listener("notif", notify);
   }, []);
 
   const handleLogin = (credentialResponse) => {
@@ -63,10 +68,9 @@ const App = () => {
           <Route path="/market" element={<Market user={user} loggedIn={Boolean(user._id)} />} />
           <Route path="/match" element={<Match user={user} loggedIn={Boolean(user._id)} />} />
           <Route path="/info" element={<Info loggedIn={Boolean(user._id)} />} />
-          <Route path="/profile" element={<Profile user={user} loggedIn={Boolean(user._id)} />} />
           <Route
-            path="/update_profile"
-            element={<UpdateProfile user={user} loggedIn={Boolean(user._id)} updateUser={init} />}
+            path="/profile"
+            element={<Profile user={user} loggedIn={Boolean(user._id)} updateUser={init} />}
           />
           <Route path="/history" element={<History loggedIn={Boolean(user._id)} />} />
         </Routes>
