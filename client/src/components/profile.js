@@ -1,8 +1,58 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { get } from "../utilities.js";
+import ClientSocket from "../client-socket.js";
 
 import NotLoggedIn from "./not_logged_in.js";
 import "../stylesheets/profile.css";
+
+const StatsBox = () => {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    const init = () => {
+      get("/api/user_stats").then((stats) => setStats(stats));
+    };
+    init();
+    ClientSocket.listen("update_transactions", init);
+    return () => ClientSocket.remove_listener("update_transactions", init);
+  }, []);
+
+  if (!stats) {
+    return (
+      <div id="stats-box">
+        <p className="u-l u-flex u-justify-center">Transaction History</p>
+        <div className="linebreak-1"></div>
+        <p className="u-mm">Loading Stats</p>
+      </div>
+    );
+  }
+
+  return (
+    <div id="stats-box">
+      <p className="u-l u-flex u-justify-center">Transaction History</p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Total Swipes Bought:</b> {stats.bought}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Total Swipes Sold:</b> {stats.sold}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Total Money Saved:</b> ${stats.money_saved.toFixed(2)}
+      </p>
+      <br />
+      <div className="u-flex u-justify-center">
+        <button className="default-button" onClick={() => navigate("/history")}>
+          <p className="u-mm u-block">View Full History</p>
+        </button>
+      </div>
+    </div>
+  );
+};
 
 // User schema:
 //     name: String,
@@ -60,31 +110,7 @@ const Profile = ({ loggedIn, user }) => {
       </div>
       <br />
       <br />
-      <div id="stats-box">
-        <p className="u-l u-flex u-justify-center">Transaction History</p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Total Swipes Bought:</b> 120
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Total Swipes Sold:</b> 2
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Total Money Saved:</b> $465.75
-        </p>
-        <div className="linebreak-1"></div>
-        <p className="u-mm">
-          <b>Favorite Dining Hall:</b> Next
-        </p>
-        <br />
-        <div className="u-flex u-justify-center">
-          <button className="default-button" onClick={() => navigate("/history")}>
-            <p className="u-mm u-block">View Full History</p>
-          </button>
-        </div>
-      </div>
+      <StatsBox />
       <br />
     </div>
   );

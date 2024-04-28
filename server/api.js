@@ -29,12 +29,13 @@ router.get("/who_am_i", (req, res) => {
 
 //init client socket
 //we need to check if it's logged in first! only add user if logged in.
-router.post("/init_client_socket", auth.ensureLoggedIn, (req, res) => {
+router.post("/init_client_socket", (req, res) => {
   // console.log(req.user, typeof req.user, "user");
   // console.log(req.body, typeof req.body, "body");
   // if (SocketManager.getSocketFromSocketID(req.body.socketid)) console.log("nonempty!");
+  if (!req.user) return res.send({});
   SocketManager.addUser(req.user, SocketManager.getSocketFromSocketID(req.body.socketid));
-  res.status(200).send({ outcome: "added" });
+  res.send({ outcome: "added" });
 });
 
 //updates profile information for current user
@@ -127,6 +128,8 @@ const get_meal = (date) => {
 
 const validate_order = async (req, res, next) => {
   const { market, type, date, dhall, price, quantity } = req.body;
+  if (!(market && type && date && dhall && price && quantity))
+    return res.send({ msg: "not compelete" });
   const user_doc = await User.findById(req.user._id);
   if (type === "buy") {
     if (!user_doc.is_buyer)
@@ -137,24 +140,22 @@ const validate_order = async (req, res, next) => {
   }
   req.body.price = Number(Number(price).toFixed(2));
   req.body.quantity = Number(Number(quantity).toFixed(0));
-  if (
-    (!req.body.price && req.body.price !== 0) || //check if it's NaN
-    (!req.body.quantity && req.body.quantity !== 0) || //check if it's NaN
-    req.body.price < 0 ||
-    req.body.price > 20 ||
-    req.body.quantity < 1 ||
-    req.body.quantity > 10
-  )
+  if (isNaN(req.body.price) || isNaN(req.body.quantity))
+    return res.send({ msg: "invalid price/quantity" });
+  if (req.body.price < 0 || req.body.price > 20 || req.body.quantity < 1 || req.body.quantity > 10)
     return res.send({
       msg: "Bad price/quantity! Price must be a number from 0 through 20, and quantity must be an integer from 1 through 10.",
     });
+  req.body.date = new Date(date);
+  if (isNaN(req.body.date.getTime())) return res.send({ msg: "invalid date" });
   if (market === "reserve") {
-    const today = new Date();
-    const thirtyDaysLater = new Date(Date.now() + 30 * 24 * 3600 * 1000);
-    if (date < today) return res.send({ msg: "Your reservation order must be for the future!" });
-    if (date > thirtyDaysLater)
+    const today = Date.now();
+    const thirtyDaysLater = Date.now() + 30 * 24 * 3600 * 1000;
+    if (req.body.date.getTime() < today)
+      return res.send({ msg: "Your reservation order must be for the future!" });
+    if (req.body.date.getTime() > thirtyDaysLater)
       return res.send({
-        msg: "Your reservation order cannot be more than 30 days from today.",
+        msg: "Your reservation order cannot be for more than 30 days from today.",
       });
   }
   if (market === "live") req.body.date = new Date();
@@ -233,7 +234,7 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
   });
   await newMatch.save();
   SocketManager.emit_to_user(user_id, "update_matches");
-  SocketManager.emit_to_user(req.user._id, "update_matches");
+  SocketManager.emit_to_user(req.user._id.toString(), "update_matches");
   return res.send({});
 });
 
@@ -286,16 +287,16 @@ router.get("/other_person", auth.ensureLoggedIn, async (req, res) => {
 //only exception: if it's a reserve order and the date has already passed
 router.post("/cancel_match", auth.ensureLoggedIn, async (req, res) => {
   const { match_id } = req.body;
-  const match = Match.findById(match_id);
+  const match = await Match.findById(match_id);
   if (!match) return res.send({});
   await Match.findByIdAndDelete(match_id);
+  SocketManager.emit_to_user(match.buyer_id, "update_matches");
+  SocketManager.emit_to_user(match.seller_id, "update_matches");
 
   //now, put it back on the market if the claimer canceled
-
   const canceled_by = req.user._id.toString() === match.buyer_id ? "buyer" : "seller";
   if (canceled_by !== match.ordered_by) {
-    const currentDate = new Date();
-    if (match.market === "reserve" && match.date < currentDate) return res.send({});
+    if (match.market === "reserve" && match.date.getTime() < Date.now()) return res.send({});
     const newOrder = new Order({
       user_id: match.ordered_by === "buyer" ? match.buyer_id : match.seller_id,
       market: match.market,
@@ -306,6 +307,7 @@ router.post("/cancel_match", auth.ensureLoggedIn, async (req, res) => {
       meal: match.meal,
     });
     await newOrder.save();
+    SocketManager.emit_to_all("update_order_book");
   }
   return res.send({});
 });
@@ -340,11 +342,11 @@ router.post("/finish_match", auth.ensureLoggedIn, async (req, res) => {
     });
     await newTransaction.save();
     await Match.findByIdAndDelete(match_id);
+    SocketManager.emit_to_user(match.buyer_id, "update_transactions");
+    SocketManager.emit_to_user(match.seller_id, "update_transactions");
   }
   SocketManager.emit_to_user(match.buyer_id, "update_matches");
   SocketManager.emit_to_user(match.seller_id, "update_matches");
-  SocketManager.emit_to_user(match.buyer_id, "update_transactions");
-  SocketManager.emit_to_user(match.seller_id, "update_transactions");
   return res.send({});
 });
 
@@ -364,6 +366,26 @@ router.get("/transaction_history", auth.ensureLoggedIn, (req, res) => {
     .sort({ date: -1 })
     .then((transactions) => res.send(transactions.map(process_transaction)));
   return; //sort transactions from latest to oldest
+});
+
+router.get("/user_stats", auth.ensureLoggedIn, async (req, res) => {
+  const meal_price = { breakfast: 10.85, lunch: 17, dinner: 19.95, "late night": 19.95 };
+  const my_transactions = await Transaction.find({
+    $or: [{ buyer_id: req.user._id.toString() }, { seller_id: req.user._id.toString() }],
+  });
+  let bought = 0,
+    sold = 0,
+    money_saved = 0;
+  for (let transaction of my_transactions) {
+    if (transaction.buyer_id === req.user._id.toString()) {
+      bought++;
+      money_saved += Math.max(0, meal_price[transaction.meal] - transaction.price);
+    } else {
+      sold++;
+      money_saved += transaction.price;
+    }
+  }
+  return res.send({ bought: bought, sold: sold, money_saved: money_saved });
 });
 
 module.exports = router;

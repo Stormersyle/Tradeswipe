@@ -100,7 +100,7 @@ export function convertToDisplay(name) {
 }
 
 export function getDateTime(date) {
-  const week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   // Convert to EST timezone
   const estTime = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" }));

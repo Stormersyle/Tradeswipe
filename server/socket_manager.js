@@ -21,6 +21,12 @@ const addUser = (user, socket) => {
 
   userToSocketMap[user._id] = socket;
   socketToUserMap[socket.id] = user;
+  // console.log("added user!");
+  // console.log(
+  //   "map length",
+  //   Object.keys(socketToUserMap).length,
+  //   Object.keys(userToSocketMap).length
+  // );
 };
 
 const removeUser = (user, socket) => {
@@ -49,7 +55,6 @@ const io_init = (http_server) => {
   io.on("connection", (socket) => {
     console.log(`socket has connected: ${socket.id}`);
     socket.emit("ready");
-
     //when a socket disconnects, make sure to remove it!
     socket.on("disconnect", () => {
       // console.log(`socket has disconnected: ${socket.id}`);

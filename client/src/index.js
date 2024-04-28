@@ -26,10 +26,8 @@ const App = () => {
   const [user, setUser] = useState({}); //user = {} if logged out; full object if logged in
   //to checked if logged in: check if user._id is truthy or falsy
 
-  const init = async () => {
-    //initializes everything: user data (from current session) and sockets
-    const user_doc = await get("/api/who_am_i");
-    setUser(user_doc);
+  const init = () => {
+    get("/api/who_am_i").then((user_doc) => setUser(user_doc));
   };
 
   useEffect(() => {
@@ -40,7 +38,10 @@ const App = () => {
     const userToken = credentialResponse.credential;
     const decodedCredential = jwt_decode(userToken);
     console.log(`Logged in as ${decodedCredential.name}`);
-    post("/api/login", { token: userToken }).then(() => init());
+    post("/api/login", { token: userToken }).then(() => {
+      ClientSocket.init_client();
+      init();
+    });
   };
 
   const handleLogout = () => {
@@ -61,13 +62,13 @@ const App = () => {
           />
           <Route path="/market" element={<Market user={user} loggedIn={Boolean(user._id)} />} />
           <Route path="/match" element={<Match user={user} loggedIn={Boolean(user._id)} />} />
-          <Route path="/info/:id?" element={<Info loggedIn={Boolean(user._id)} />} />
+          <Route path="/info" element={<Info loggedIn={Boolean(user._id)} />} />
           <Route path="/profile" element={<Profile user={user} loggedIn={Boolean(user._id)} />} />
           <Route
             path="/update_profile"
             element={<UpdateProfile user={user} loggedIn={Boolean(user._id)} updateUser={init} />}
           />
-          <Route path="/history" element={<History loggedIn={loggedIn} />} />
+          <Route path="/history" element={<History loggedIn={Boolean(user._id)} />} />
         </Routes>
       </GoogleOAuthProvider>
     </BrowserRouter>

@@ -1,6 +1,5 @@
 import React from "react";
 
-//use url parameter to scroll to a specific div
 const Info = ({ loggedIn }) => {
   if (!loggedIn) {
     return (
@@ -111,8 +110,8 @@ const Info = ({ loggedIn }) => {
         <div className="linebreak-1"></div>
         <p className="u-mm">
           If you have any questions or feedback about Tradeswipe, please email{" "}
-          <a href="mailto:tradeswipe-mit@gmail.com">tradeswipe-mit@gmail.com</a>. I will read and
-          respond to every email.
+          <a href="mailto:tradeswipe-mit@gmail.com">tradeswipe-mit@gmail.com</a>. I read and respond
+          to all emails.
         </p>
       </div>
       <br />
