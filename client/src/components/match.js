@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { get, post, convertToDisplay, getDateTime } from "../utilities.js";
 import Waiting from "./waiting.js";
 import NotLoggedIn from "./not_logged_in.js";
@@ -10,23 +10,32 @@ const Help = ({ closeHelp }) => {
     <dialog open className="popup help">
       <p className="u-l">Match Help</p>
       <div className="linebreak-2"></div>
-      <p className="u-mm">
-        Tradeswipe supports a market for live orders (i.e. buying/selling swipes in real time) and a
-        market for reservation orders (i.e. buying/selling swipes for a specified future date/time).
-        On the Market page, you can view these markets, and you can claim other people's orders or
-        place your own. Note that if you claim someone's $X buy order, you're <b>selling</b> a swipe
-        for $X; if you claim someone's $X sell order, you're <b>buying</b> a swipe for $X.
+      <p className="u-m">
+        This page displays your matches (i.e. people who have claimed your order or whose order you
+        have claimed) in both the live and reservation market. You should meet up with your match at
+        the selected dining hall when it's time to make the trade (either now for live matches, or
+        at the scheduled date/time for reservation matches).
       </p>
       <div className="linebreak-2"></div>
-      <p className="u-mm">
-        Once someone claims another person's order, a match is made and the order is taken off the
-        market. You can view your matches and pending orders on the "Match" page, and you will also
-        be notified of new matches. You will be notified both on the website and via email;{" "}
-        <b>
-          make sure to unblock{" "}
-          <a href="mailto:tradeswipe-mit@gmail.com">tradeswipe-mit@gmail.com</a>
+      <p className="u-m">
+        Once it's time for the buyer and seller to meet up,{" "}
+        <b className="u-m">
+          it is up to the buyer to find the seller. The buyer will be shown the seller's directions,
+          so it's very important for the seller to set updated directions on their profile
+        </b>
+        . After both people meet, the seller taps in the buyer, and the buyer pays with either Venmo
+        or cash. Note that per MIT dining regulations, the seller must also go eat after swiping in
+        a group of buyers
+      </p>
+      <div className="linebreak-2"></div>
+      <p className="u-m">
+        Finally, click "finish" on your match after the transaction is done; alternatively, if you
+        have a change of plans, you can cancel on your match before you make the transaction (though
+        this is generally discouraged).{" "}
+        <b className="u-m">
+          If the person who claims your order cancels, your order will go back on the market
         </b>{" "}
-        from your spam!
+        (with the exception of reservation orders whose scheduled time has already passed).
       </p>
       <br />
       <button onClick={closeHelp} className="default-button">
@@ -37,14 +46,14 @@ const Help = ({ closeHelp }) => {
 };
 
 //displays the info of the other person
-const MatchInfo = ({ match_id, my_role }) => {
+const MatchInfo = ({ match_id, my_role, state }) => {
   const [person, setPerson] = useState(null); //person = the user we're matched with
 
   useEffect(() => {
     get("/api/other_person", { match_id: match_id }).then((other_person) =>
       setPerson(other_person)
     );
-  }, []);
+  }, [state, match_id]);
 
   if (!person)
     return (
@@ -70,7 +79,7 @@ const MatchInfo = ({ match_id, my_role }) => {
 };
 
 //given a filter, creates display_match function with this filter
-//filter: properties market, dhall, meal
+//filter: properties market, dhall, meal, state
 const create_display_match = (filter) => {
   const display_match = (match) => {
     if (filter.market !== match.market) return null;
@@ -97,7 +106,7 @@ const create_display_match = (filter) => {
           </div>
         ) : null}
         <div className="linebreak-2"></div>
-        <MatchInfo match_id={match._id} my_role={match.my_role} />
+        <MatchInfo match_id={match._id} my_role={match.my_role} state={filter.state} />
         <div className="linebreak-2"></div>
         <div className="u-flex">
           <button
@@ -121,11 +130,16 @@ const create_display_match = (filter) => {
 
 const MatchBox = ({ market, dhall, meal }) => {
   const [matches, setMatches] = useState(null);
+  const [state, setState] = useState(1); //this is # of times it's been re-rendered; point is to force <MatchInfo/> to re-init each time we hear "update_matches"
+
+  const init = useCallback(() => {
+    get("/api/matches").then((match_list) => {
+      setMatches(match_list);
+      setState((c) => c + 1);
+    });
+  }, []);
 
   useEffect(() => {
-    const init = () => {
-      get("/api/matches").then((match_list) => setMatches(match_list));
-    };
     init();
     ClientSocket.listen("update_matches", init);
     return () => ClientSocket.remove_listener("update_matches", init);
@@ -142,7 +156,9 @@ const MatchBox = ({ market, dhall, meal }) => {
     );
   return (
     <div className="match-box">
-      {matches.map(create_display_match({ market: market, dhall: dhall, meal: meal }))}
+      {matches.map(
+        create_display_match({ market: market, dhall: dhall, meal: meal, state: state })
+      )}
     </div>
   );
 };

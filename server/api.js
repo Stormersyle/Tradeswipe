@@ -137,7 +137,7 @@ router.post("/update_notifs", auth.ensureLoggedIn, (req, res) => {
 //next functions: for placing order
 const validate_order = async (req, res, next) => {
   const { market, type, date, dhall, price, quantity } = req.body;
-  if (!(market && type && date && dhall && price && quantity))
+  if (!(market && type && date && dhall && (price || price === 0) && quantity))
     return res.send({ msg: "not compelete" });
   const user_doc = await User.findById(req.user._id);
   if (type === "buy") {

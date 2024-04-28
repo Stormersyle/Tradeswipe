@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { get, convertToDisplay, getDateTime } from "../utilities.js";
 import { useNavigate } from "react-router-dom";
 import Waiting from "./waiting.js";
@@ -49,10 +49,11 @@ const create_display_transaction = (filter) => {
 const HistoryBox = ({ market, dhall, meal }) => {
   const [transactions, setTransactions] = useState(null);
 
+  const init = useCallback(() => {
+    get("/api/transaction_history").then((transactions) => setTransactions(transactions));
+  }, []);
+
   useEffect(() => {
-    const init = () => {
-      get("/api/transaction_history").then((transactions) => setTransactions(transactions));
-    };
     init();
     ClientSocket.listen("update_transactions", init);
     return () => ClientSocket.remove_listener("update_transactions", init);

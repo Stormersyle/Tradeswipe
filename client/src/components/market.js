@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { get, post, convertToDisplay, getDateTime } from "../utilities.js";
 import Waiting from "./waiting.js";
@@ -17,25 +17,6 @@ const PopupForm = ({ closeForm, market }) => {
   const dhallRef = useRef(null);
   const priceRef = useRef(null);
   const quantRef = useRef(null);
-  const navigate = useNavigate();
-
-  const validate_order = ({ type, date, dhall, price, quantity }) => {
-    price = Number(price);
-    quantity = Number(quantity);
-    if (!(type && date && dhall && price && quantity)) {
-      alert("Form not complete!");
-      return false;
-    }
-    if (price < 0 || price > 20) {
-      alert("Price must be at leaast $0 and at most $20!");
-      return false;
-    }
-    if (quantity < 1 || quantity > 10) {
-      alert("Quantity must be an integer from 1 through 10!");
-      return false;
-    }
-    return true;
-  };
 
   const submit = () => {
     if (dhallRef.current && priceRef.current && quantRef.current) {
@@ -47,7 +28,6 @@ const PopupForm = ({ closeForm, market }) => {
         price: priceRef.current.value,
         quantity: quantRef.current.value,
       };
-      if (!validate_order(order)) return;
       post("/api/order", order).then(({ msg }) => {
         closeForm();
         alert(msg);
@@ -126,27 +106,31 @@ const PopupForm = ({ closeForm, market }) => {
 const Help = ({ closeHelp }) => {
   return (
     <dialog open className="popup help">
-      <p className="u-l">Market</p>
+      <p className="u-l">Market Help</p>
       <div className="linebreak-2"></div>
       <p className="u-mm">
-        Tradeswipe supports a market for live orders (i.e. buying/selling swipes in real time) and a
-        market for reservation orders (i.e. buying/selling swipes for a specified future date/time).
-        On the Market page, you can view these markets, and you can claim other people's orders or
-        place your own. Note that if you claim someone's $X buy order, you're <b>selling</b> a swipe
-        for $X; if you claim someone's $X sell order, you're <b>buying</b> a swipe for $X.
+        Tradeswipe supports a market for live orders (i.e. buying/selling swipes in real-time) and a
+        market for reservation orders (i.e. buying/selling swipes for a scheduled future date/time).
       </p>
       <div className="linebreak-2"></div>
       <p className="u-mm">
-        Once someone claims another person's order, a match is made and the order is taken off the
-        market. You can view your matches and pending orders on the "Match" page, and you will also
-        be notified of new matches. You will be notified both on the website and via email;{" "}
-        <b>
-          make sure to unblock{" "}
-          <a href="mailto:tradeswipe-mit@gmail.com">tradeswipe-mit@gmail.com</a>
-        </b>{" "}
-        from your spam!
+        On this page you can view these markets; in each market, you can claim other people's orders
+        and also place your own. Note that if you claim someone's $X buy order, you're{" "}
+        <b>selling</b> a swipe for $X; if you claim someone's $X sell order, you're <b>buying</b> a
+        swipe for $X.
+      </p>
+      <div className="linebreak-2"></div>
+      <p>
+        Once you claim someone's order or someone claims your order, a match is made and the order
+        is taken off the market. You can view your matches on the Match page. If you have a change
+        of plans, you can also cancel the orders you've placed.
+      </p>
+      <div className="linebreak-2"></div>
+      <p className="u-width-fill">
+        <b>Note: if you'd like to donate swipes, simply place a sell order for $0.</b>
       </p>
       <br />
+
       <button onClick={closeHelp} className="default-button">
         Close
       </button>
@@ -219,10 +203,11 @@ const create_display_order = (filter) => {
 const OrderBox = ({ market, dhall, type, meal, mine, day }) => {
   const [orders, setOrders] = useState(null);
 
+  const init = useCallback(() => {
+    get("/api/orders").then((order_arr) => setOrders(order_arr));
+  }, []);
+
   useEffect(() => {
-    const init = () => {
-      get("/api/orders").then((order_arr) => setOrders(order_arr));
-    };
     init();
     ClientSocket.listen("update_order_book", init);
     return () => ClientSocket.remove_listener("update_order_book", init);

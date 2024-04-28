@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { get } from "../utilities.js";
 import ClientSocket from "../client-socket.js";
@@ -85,13 +85,11 @@ const StatsBox = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
 
+  const init = useCallback(() => {
+    get("/api/user_stats").then((stats) => setStats(stats));
+  }, []);
+
   useEffect(() => {
-    const init = () => {
-      get("/api/user_stats").then((stats) => {
-        console.log(stats);
-        setStats(stats);
-      });
-    };
     init();
     ClientSocket.listen("update_transactions", init);
     return () => ClientSocket.remove_listener("update_transactions", init);

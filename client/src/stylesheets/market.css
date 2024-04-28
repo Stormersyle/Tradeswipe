@@ -105,8 +105,8 @@
 }
 
 .help {
-  min-width: 300px;
-  max-width: 80vw;
+  width: 80vw;
+  max-width: 700px;
 }
 
 .claim-button {
