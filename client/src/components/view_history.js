@@ -23,12 +23,21 @@ const create_display_transaction = (filter) => {
     return (
       <div key={transaction._id} className="match">
         <div className="linebreak-2"></div>
-        <p>Your role: {convertToDisplay(transaction.my_role)}</p>
-        <p>Price: ${transaction.price.toFixed(2)}</p>
-        <p>Dining Hall: {convertToDisplay(transaction.dhall)}</p>
-        <p>Meal: {convertToDisplay(transaction.meal)}</p>
         <p>
-          Date/Time: {getDateTime(transaction.date).date} {getDateTime(transaction.date).time}
+          <b>Your role:</b> {convertToDisplay(transaction.my_role)}
+        </p>
+        <p>
+          <b>Price:</b> ${transaction.price.toFixed(2)}
+        </p>
+        <p>
+          <b>Dining Hall:</b> {convertToDisplay(transaction.dhall)}
+        </p>
+        <p>
+          <b>Meal:</b> {convertToDisplay(transaction.meal)}
+        </p>
+        <p>
+          <b>Date/Time:</b> {getDateTime(transaction.date).date}{" "}
+          {getDateTime(transaction.date).time}
         </p>
         <div className="linebreak-2"></div>
       </div>

@@ -49,14 +49,18 @@ const MatchInfo = ({ match_id, my_role }) => {
   if (!person)
     return (
       <div>
-        <p>Your Match</p>
+        <p>
+          <b>Your Match</b>
+        </p>
         <p>Loading Information</p>
       </div>
     );
 
   return (
     <div>
-      <p>Your Match</p>
+      <p>
+        <b>Your Match</b>
+      </p>
       <p>Name: {person.name}</p>
       <p>Phone Number: {person.phone_number}</p>
       {my_role === "buyer" ? <p>Venmo Username: {person.venmo_username}</p> : null}
