@@ -226,11 +226,23 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
   const order = await Order.findById(order_id);
   if (!order) return res.send({ msg: "claim failed!" });
   const user = await User.findById(req.user._id);
-  if (order.type === "buy" && !user.is_seller)
+  if (order.type === "buy" && !user.is_seller) {
     //claim a buy order; i.e. we're selling
-    return res.send({ msg: "Not authorized to sell! Please activate in your profile" });
-  if (order.type === "sell" && !user.is_buyer)
+    SocketManager.emit_to_user(
+      user._id,
+      "notif",
+      "Not authorized to sell! Please activate in your profile"
+    );
+    return res.send({});
+  }
+  if (order.type === "sell" && !user.is_buyer) {
+    SocketManager.emit_to_user(
+      user._id,
+      "notif",
+      "Not authorized to buy! Please activate in your profile"
+    );
     return res.send({ msg: "Not authorized to  buy! Please activate in your profile" });
+  }
 
   //now: make the match
   const { user_id, market, type, dhall, price, date, meal } = order;
@@ -257,14 +269,30 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
   const seller = await User.findById(newMatch.seller_id);
   if (newMatch.market === "live") {
     if (seller.live_notifs)
-      SocketManager.emit_to_user(newMatch.seller_id, "notif", "New live match!");
+      SocketManager.emit_to_user(
+        newMatch.seller_id,
+        "notif",
+        "New live match! Go to Match page to view."
+      );
     if (buyer.live_notifs)
-      SocketManager.emit_to_user(newMatch.buyer_id, "notif", "New live match!");
+      SocketManager.emit_to_user(
+        newMatch.buyer_id,
+        "notif",
+        "New live match! Go to Match page to view."
+      );
   } else {
     if (seller.reserve_notifs)
-      SocketManager.emit_to_user(newMatch.seller_id, "notif", "New reservation match!");
+      SocketManager.emit_to_user(
+        newMatch.seller_id,
+        "notif",
+        "New reservation match! Go to Match page to view."
+      );
     if (buyer.reserve_notifs)
-      SocketManager.emit_to_user(newMatch.buyer_id, "notif", "New reservation match!");
+      SocketManager.emit_to_user(
+        newMatch.buyer_id,
+        "notif",
+        "New reservation match! Go to Match page to view."
+      );
   }
 
   return res.send({});
