@@ -85,4 +85,3 @@ root.render(
     <App />
   </StrictMode>
 );
-module.hot.accept();
