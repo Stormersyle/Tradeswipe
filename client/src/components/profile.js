@@ -27,23 +27,15 @@ const Profile = ({ user, openUpdateProfile }) => {
       </p>
       <div className="linebreak-1"></div>
       <p className="u-mm">
+        <b>Kerb:</b> {user.kerb ? user.kerb : "N/A"}
+      </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
         <b>Email:</b> {user.email ? user.email : "N/A"}
       </p>
       <div className="linebreak-1"></div>
       <p className="u-mm">
         <b>Phone:</b> {user.phone_number ? user.phone_number : "N/A"}
-      </p>
-      <div className="linebreak-1"></div>
-      <p className="u-mm">
-        <b>Venmo Username:</b> {user.venmo_username ? user.venmo_username : "N/A"}
-      </p>
-      <div className="linebreak-1"></div>
-      <p className="u-mm">
-        <b>Buyer Enabled:</b> {user.is_buyer ? "Yes" : "No"}
-      </p>
-      <div className="linebreak-1"></div>
-      <p className="u-mm">
-        <b>Seller Enabled:</b> {user.is_seller ? "Yes" : "No"}
       </p>
       <div className="linebreak-1"></div>
       <p className="u-mm">

@@ -48,35 +48,16 @@ router.post("/init_client_socket", (req, res) => {
 //updates profile information for current user
 //chat gpt generated regex, may or may not be correct ...
 const validate_profile = (req, res, next) => {
-  const { name, is_buyer, is_seller, phone_number, venmo_username } = req.body;
-  for (let x of [name, phone_number, venmo_username]) {
-    if (typeof x !== "string") {
-      res.status(403).send({ msg: "wrong type" });
-      return;
-    }
-  }
-  if (!(typeof is_buyer === "boolean" && typeof is_seller === "boolean")) {
-    res.status(403).send({ msg: "wrong type" });
-    return;
-  }
+  const { phone_number, directions } = req.body;
+  if (!(typeof phone_number === "string" && typeof directions === "string"))
+    return res.send({ ok: false, msg: "inputs wrong type" });
 
-  const regex_name = /^[A-Za-z]+ [A-Za-z]+$/;
-  const regex_venmo = /^[a-zA-Z0-9_-]{5,30}$/;
-  const regex_phone = /^[\d\s\-\(\)\+]*(?:\d[\d\s\-\(\)\+]*){7,}$/;
-
-  if (!regex_name.test(name)) {
-    return res.send({ msg: "invalid name" });
-  }
-  if ((is_buyer || is_seller) && !regex_phone.test(phone_number)) {
-    return res.send({ msg: "invalid email" });
-  }
-  if (is_seller && !regex_venmo.test(venmo_username)) {
-    return res.send({ msg: "invalid venmo" });
-  }
+  // const regex_venmo = /^[a-zA-Z0-9_-]{5,30}$/;
+  // const regex_phone = /^[\d\s\-\(\)\+]*(?:\d[\d\s\-\(\)\+]*){7,}$/;
+  // if ((is_buyer || is_seller) && !regex_phone.test(phone_number)) {
+  //   return res.send({ msg: "invalid phone number" });
+  // }
   next();
-  //rules: everyone must have a valid name (you can't change ur email)
-  //all buyers and sellers must have a valid phone number
-  //all sellers must have a valid venmo
 };
 
 router.post("/update_profile", auth.ensureLoggedIn, validate_profile, async (req, res) => {
@@ -85,11 +66,8 @@ router.post("/update_profile", auth.ensureLoggedIn, validate_profile, async (req
     { _id: req.user._id },
     {
       $set: {
-        name: profile.name,
-        is_buyer: profile.is_buyer,
-        is_seller: profile.is_seller,
         phone_number: profile.phone_number,
-        venmo_username: profile.venmo_username,
+        // venmo_username: profile.venmo_username,
         directions: profile.directions,
       },
     }
@@ -144,13 +122,13 @@ const validate_order = async (req, res, next) => {
   if (!(market && type && date && dhall && (price || price === 0) && quantity))
     return res.send({ msg: "not compelete" });
   const user_doc = await User.findById(req.user._id);
-  if (type === "buy") {
-    if (!user_doc.is_buyer)
-      return res.send({ msg: "Not an authorized buyer! Please activate in your profile." });
-  } else {
-    if (!user_doc.is_seller)
-      return res.send({ msg: "Not an authorized seller! Please activate in your profile." });
-  }
+  // if (type === "buy") {
+  //   if (!user_doc.is_buyer)
+  //     return res.send({ msg: "Not an authorized buyer! Please activate in your profile." });
+  // } else {
+  //   if (!user_doc.is_seller)
+  //     return res.send({ msg: "Not an authorized seller! Please activate in your profile." });
+  // }
   req.body.price = Number(Number(price).toFixed(2));
   req.body.quantity = Number(Number(quantity).toFixed(0));
   if (isNaN(req.body.price) || isNaN(req.body.quantity))
