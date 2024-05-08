@@ -1,6 +1,6 @@
 import React from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
-import { googleLogout } from "@react-oauth/google";
+import { useNavigate, Link } from "react-router-dom";
+// import { googleLogout } from "@react-oauth/google";
 import "../stylesheets/navbar.css";
 
 const Navbar = ({ loggedIn, handleLogout }) => {
@@ -40,9 +40,6 @@ const Navbar = ({ loggedIn, handleLogout }) => {
         <Link to="/market" className="nav-link u-mmm u-flex u-align-center u-height-fill">
           Market
         </Link>
-        <Link to="/match" className="nav-link u-mmm u-flex u-align-center u-height-fill">
-          Match
-        </Link>
       </div>
 
       <div className="nav-container u-flex u-justify-end u-align-center u-height-fill">
@@ -57,7 +54,7 @@ const Navbar = ({ loggedIn, handleLogout }) => {
         </Link>
         <button
           onClick={() => {
-            googleLogout();
+            // googleLogout();
             handleLogout();
             navigate("/");
           }}
@@ -118,11 +115,6 @@ const HamburgerMenu = ({ loggedIn, handleLogout }) => {
             </a>
           </li>
           <li>
-            <a className="menu__item" href="/match">
-              Match
-            </a>
-          </li>
-          <li>
             <a className="menu__item" href="/info">
               Info
             </a>
@@ -135,7 +127,7 @@ const HamburgerMenu = ({ loggedIn, handleLogout }) => {
           <li>
             <button
               onClick={() => {
-                googleLogout();
+                // googleLogout();
                 handleLogout();
                 navigate("/");
                 location.reload();

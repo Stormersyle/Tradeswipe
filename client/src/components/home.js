@@ -1,9 +1,8 @@
 import React from "react";
-import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import "../stylesheets/home.css";
 
-const Home = ({ handleLogin, loggedIn }) => {
+const Home = ({ loggedIn }) => {
   const navigate = useNavigate();
 
   return (
@@ -19,20 +18,23 @@ const Home = ({ handleLogin, loggedIn }) => {
       <br />
       {loggedIn ? (
         <div className="u-flex u-justify-center u-align-center">
-          <button onClick={() => navigate("/info")} className="default-button">
-            <p className="u-mmm">Instructions</p>
-          </button>
+          {/* <button onClick={() => navigate("/info")} className="default-button">
+            <p className="u-mmm">About</p>
+          </button> */}
           <button onClick={() => navigate("/market")} className="default-button">
-            <p className="u-mmm">Trade Now</p>
+            <p className="u-mmm">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Trade Now&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </p>
           </button>
         </div>
       ) : (
         <div className="u-width-fit">
-          <GoogleLogin
-            onSuccess={handleLogin}
-            onError={(err) => console.log(err)}
-            id="GoogleLogin"
-          />
+          <a href="api/login/touchstone/redirect">
+            <div className="default-button touchstone-button u-flex u-justify-start u-align-center">
+              <img src="/assets/mit.png" className="mit-logo" />
+              <p className="u-mmm">&nbsp;&nbsp;Touchstone Login&nbsp;</p>
+            </div>
+          </a>
         </div>
       )}
     </div>

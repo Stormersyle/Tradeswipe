@@ -11,22 +11,24 @@ const getUserFromSocketID = (socketid) => socketToUserMap[socketid];
 const getSocketFromSocketID = (socketid) => io.sockets.sockets.get(socketid); //updated for SocketIO v4
 
 const addUser = (user, socket) => {
+  if (!socket || !socket.id) {
+    console.log("adding user failed!");
+    return;
+  }
   const oldSocket = userToSocketMap[user._id];
-
   if (oldSocket && oldSocket.id !== socket.id) {
     // there was an old tab open for this user, force it to disconnect
     oldSocket.disconnect();
     delete socketToUserMap[oldSocket.id];
   }
-
   userToSocketMap[user._id] = socket;
   socketToUserMap[socket.id] = user;
-  // console.log("added user!");
-  // console.log(
-  //   "map length",
-  //   Object.keys(socketToUserMap).length,
-  //   Object.keys(userToSocketMap).length
-  // );
+  console.log("added user!");
+  console.log(
+    "map length",
+    Object.keys(socketToUserMap).length,
+    Object.keys(userToSocketMap).length
+  );
 };
 
 const removeUser = (user, socket) => {

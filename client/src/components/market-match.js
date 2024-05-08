@@ -5,46 +5,6 @@ import NotLoggedIn from "./not_logged_in.js";
 import ClientSocket from "../client-socket.js";
 import "../stylesheets/market.css";
 
-const Help = ({ closeHelp }) => {
-  return (
-    <dialog open className="popup help">
-      <p className="u-l">Match Help</p>
-      <div className="linebreak-2"></div>
-      <p className="u-m">
-        This page displays your matches (i.e. people who have claimed your order or whose order you
-        have claimed) in both the live and reservation market. You should meet up with your match at
-        the selected dining hall when it's time to make the trade (either now for live matches, or
-        at the scheduled date/time for reservation matches).
-      </p>
-      <div className="linebreak-2"></div>
-      <p className="u-m">
-        Once it's time for the buyer and seller to meet up,{" "}
-        <b className="u-m">
-          it is up to the buyer to find the seller. The buyer will be shown the seller's directions,
-          so it's very important for the seller to set updated directions on their profile
-        </b>
-        . After both people meet, the seller taps in the buyer, and the buyer pays with either Venmo
-        or cash. Note that per MIT dining regulations, the seller must also go eat after swiping in
-        a group of buyers
-      </p>
-      <div className="linebreak-2"></div>
-      <p className="u-m">
-        Finally, click "finish" on your match after the transaction is done; alternatively, if you
-        have a change of plans, you can cancel on your match before you make the transaction (though
-        this is generally discouraged).{" "}
-        <b className="u-m">
-          If the person who claims your order cancels, your order will go back on the market
-        </b>{" "}
-        (with the exception of reservation orders whose scheduled time has already passed).
-      </p>
-      <br />
-      <button onClick={closeHelp} className="default-button">
-        Close
-      </button>
-    </dialog>
-  );
-};
-
 //displays the info of the other person
 const MatchInfo = ({ match_id, my_role, state }) => {
   const [person, setPerson] = useState(null); //person = the user we're matched with

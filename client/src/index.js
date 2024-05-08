@@ -14,10 +14,10 @@ import ClientSocket from "./client-socket.js";
 import Home from "./components/home.js";
 import Nav from "./components/nav.js";
 import Market from "./components/market.js";
-import Match from "./components/match.js";
 import Info from "./components/info.js";
 import Profile from "./components/profile.js";
 import History from "./components/view_history.js";
+import BackDoor from "./components/backdoor.js";
 
 const GOOGLE_CLIENT_ID = "954844909530-hvosmig1l5f9j86o7vn7cmhh6r3sou05.apps.googleusercontent.com";
 
@@ -38,16 +38,17 @@ const App = () => {
     init();
     return () => ClientSocket.remove_listener("notif", notify);
   }, []);
+  //in touchstone login: we'll be redirected to an external page, then redirected back AFTER req.session.user is populated. So the client socket is automatically re-initialized in client-socket.js, this time WITH the user logged in.
 
-  const handleLogin = (credentialResponse) => {
+  const handleGoogleLogin = (credentialResponse) => {
     const userToken = credentialResponse.credential;
     const decodedCredential = jwt_decode(userToken);
     console.log(`Logged in as ${decodedCredential.name}`);
-    post("/api/login", { token: userToken }).then(() => {
+    post("/api/login/google", { token: userToken }).then(() => {
       ClientSocket.init_client();
       init();
     });
-  };
+  }; //whereas: in Google login, no App remount, so we need to re-init client socket explicitly.
 
   const handleLogout = () => {
     post("/api/logout").then(() => {
@@ -61,18 +62,20 @@ const App = () => {
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <Nav loggedIn={Boolean(user._id)} handleLogout={handleLogout} />
         <Routes>
-          <Route
-            path="/"
-            element={<Home handleLogin={handleLogin} loggedIn={Boolean(user._id)} />}
-          />
+          <Route path="/" element={<Home loggedIn={Boolean(user._id)} />} />
           <Route path="/market" element={<Market user={user} loggedIn={Boolean(user._id)} />} />
-          <Route path="/match" element={<Match user={user} loggedIn={Boolean(user._id)} />} />
           <Route path="/info" element={<Info loggedIn={Boolean(user._id)} />} />
           <Route
             path="/profile"
             element={<Profile user={user} loggedIn={Boolean(user._id)} updateUser={init} />}
           />
           <Route path="/history" element={<History loggedIn={Boolean(user._id)} />} />
+          <Route
+            path="/backdoor"
+            element={
+              <BackDoor loggedIn={Boolean(user._id)} handleGoogleLogin={handleGoogleLogin} />
+            }
+          />
         </Routes>
       </GoogleOAuthProvider>
     </BrowserRouter>

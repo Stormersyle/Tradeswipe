@@ -1,5 +1,6 @@
 const express = require("express");
 const auth = require("./auth.js");
+const googleAuth = require("./google_auth.js");
 const SocketManager = require("./socket_manager.js");
 
 const User = require("./models/user.js");
@@ -14,8 +15,14 @@ const router = express.Router(); //mounted on /api
 router.use(auth.populateCurrentUser);
 
 //login/logout
-router.post("/login", auth.login);
+router.get("/login/touchstone/redirect", auth.redirectOidc);
+router.get("/login/touchstone", auth.loginTouchstone);
 router.post("/logout", auth.ensureLoggedIn, auth.logout);
+
+//login needs to be a GET request! basically, how it works: when we visit /api/login/touchstone/redirect, we make a GET request to the server for the page (since webpack redirects requests starting with "/api" to the server), thus triggering auth.redirectOidc
+
+//google login, only for developer testing
+router.post("/login/google", googleAuth.login);
 
 //gets data of the user (based on req.user);
 //sends back empty document if req.user=null (i.e. logged out)
@@ -58,16 +65,13 @@ const validate_profile = (req, res, next) => {
   const regex_phone = /^[\d\s\-\(\)\+]*(?:\d[\d\s\-\(\)\+]*){7,}$/;
 
   if (!regex_name.test(name)) {
-    res.status(403).send({ msg: "invalid name" });
-    return;
+    return res.send({ msg: "invalid name" });
   }
   if ((is_buyer || is_seller) && !regex_phone.test(phone_number)) {
-    res.status(403).send({ msg: "invalid email" });
-    return;
+    return res.send({ msg: "invalid email" });
   }
   if (is_seller && !regex_venmo.test(venmo_username)) {
-    res.status(403).send({ msg: "invalid venmo" });
-    return;
+    return res.send({ msg: "invalid venmo" });
   }
   next();
   //rules: everyone must have a valid name (you can't change ur email)
@@ -241,7 +245,7 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
       "notif",
       "Not authorized to buy! Please activate in your profile"
     );
-    return res.send({ msg: "Not authorized to  buy! Please activate in your profile" });
+    return res.send({});
   }
 
   //now: make the match

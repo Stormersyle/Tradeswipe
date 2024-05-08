@@ -22,12 +22,10 @@
   margin: 0;
 }
 
-/* .homepage-button {
-  background: rgb(247, 122, 122);
-  color: white;
-  padding: 2vh 2vw;
-  margin: 0 0.5vw;
-  width: fit-content;
-  height: fit-content;
-  border-radius: 5px;
-} */
+.touchstone-button:hover {
+  opacity: 70%;
+}
+
+.mit-logo {
+  height: 25px;
+}

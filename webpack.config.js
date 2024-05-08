@@ -64,10 +64,10 @@ module.exports = {
   plugins: [new webpack.HotModuleReplacementPlugin()],
   devServer: {
     historyApiFallback: true,
-    static: "./client/dist",
+    static: "./client/dist", //serve static files from ./client/dist, directly from webpack dev server
     hot: true,
     proxy: {
-      "/api": "http://localhost:3000",
+      "/api": "http://localhost:3000", //HTTP requests starting with /api normally get sent to port 5050; but webpack forwards it to port 3000 (the server's port). similarly for sockets
       "/socket.io/*": {
         target: "http://localhost:3000",
         ws: true,

@@ -1,56 +1,88 @@
 //modified from catbook
-const { OAuth2Client } = require("google-auth-library");
 const SocketManager = require("./socket_manager.js");
 const User = require("./models/user.js");
 
-// create a new OAuth client used to verify google sign-in
-//this is ok (not a security risk) because only selected URLs may access this client ID
-const CLIENT_ID = "954844909530-hvosmig1l5f9j86o7vn7cmhh6r3sou05.apps.googleusercontent.com";
-const client = new OAuth2Client(CLIENT_ID);
+const { Issuer } = require("openid-client");
+require("dotenv").config();
 
-// accepts a login token from the frontend, and verifies that it's legit
-function verify(token) {
-  return client
-    .verifyIdToken({
-      idToken: token,
-      audience: CLIENT_ID,
+/* Touchstone (OIDC - OpenID Connect) */
+
+// const BASEURL = process.env.BASEURL ?? "http://localhost:5050"
+const BASEURL = "http://localhost:5050";
+const OIDC_REDIRECT_URI = `${BASEURL}/api/login/touchstone`;
+
+const touchstoneIssuerPromise = Issuer.discover("https://petrock.mit.edu");
+let oidcClientPromise = touchstoneIssuerPromise.then(
+  (issuer) =>
+    new issuer.Client({
+      client_id: process.env.TOUCHSTONE_CLIENT_ID,
+      client_secret: process.env.TOUCHSTONE_CLIENT_SECRET,
+      redirect_uris: [OIDC_REDIRECT_URI],
+      response_types: ["code"],
     })
-    .then((ticket) => ticket.getPayload());
-}
+);
 
-// gets user from DB, or makes a new account if it doesn't exist yet
-//returns a promise resolving to the found/created User document
-function getOrCreateUser(user) {
-  //user=ticket payload
-  // the "sub" field means "subject", which is a unique identifier for each user
-  return User.findOne({ googleid: user.sub }).then((existingUser) => {
-    if (existingUser) return existingUser;
+const redirectOidc = (req, res) => {
+  oidcClientPromise
+    .then((client) => {
+      // https://www.npmjs.com/package/openid-client has a code challenge, is it necessary?
+      const url = client.authorizationUrl({
+        scope: "openid profile email",
+        state: req.headers.referer,
+      });
+      res.redirect(url);
+    })
+    .catch(() => res.status(403).send({}));
+};
 
+const getUserInfo = async (req) => {
+  const client = await oidcClientPromise;
+  const params = client.callbackParams(req);
+  const tokenSet = await client.callback(OIDC_REDIRECT_URI, {
+    code: params.code,
+  });
+  const userinfo = await client.userinfo(tokenSet.access_token);
+  console.log(userinfo);
+  return userinfo;
+};
+
+//touchstone version
+const getOrCreateUser = (user) => {
+  return User.findOne({ kerb: user.sub }).then((existingUser) => {
+    if (existingUser) {
+      if (user.name) existingUser.name = user.name;
+      return existingUser.save();
+    }
+    console.log(`Creating new user ${user.name} (${user.sub})`);
     const newUser = new User({
       name: user.name,
-      googleid: user.sub,
+      kerb: user.sub, //user.sub is the kerb WITH @mit.edu!
       email: user.email,
     });
-
     return newUser.save();
   });
-}
+};
 
-//when we log in: client makes request to "init_client_socket", letting the server know we have a new addition in the user-socket map
-function login(req, res) {
-  verify(req.body.token)
-    .then((user) => getOrCreateUser(user))
-    .then((user_doc) => {
-      // persist user in the session
-      req.session.user = user_doc;
-      res.send(user_doc); //user_doc gets auto-converted into an object before sending
+// basically a copy paste of loginGoogle
+const loginTouchstone = (req, res) => {
+  getUserInfo(req)
+    .then((user) => {
+      if (!user) return;
+      return getOrCreateUser(user);
+    })
+    .then(async (user) => {
+      req.session.user = user;
+      const oidcState = req.query.state?.toString();
+      const url = oidcState || "/";
+      res.redirect(url);
     })
     .catch((err) => {
-      console.log(`Failed to log in: ${err}`);
+      console.log(`Failed to login: ${err}`);
       res.status(401).send({ err });
     });
-}
+};
 
+//these are universal
 function logout(req, res) {
   const userSocket = SocketManager.getSocketFromUserID(req.user._id);
   if (userSocket) {
@@ -80,10 +112,11 @@ function ensureLoggedIn(req, res, next) {
 //doesn't send an error
 
 module.exports = {
-  login,
+  loginTouchstone,
   logout,
   populateCurrentUser,
   ensureLoggedIn,
+  redirectOidc,
 };
 
 //overall: we use Google authentication library to validate logins; use sessions to persist logins

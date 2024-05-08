@@ -5,138 +5,11 @@ import Waiting from "./waiting.js";
 import NotLoggedIn from "./not_logged_in.js";
 import ClientSocket from "../client-socket.js";
 
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../stylesheets/market.css";
 
-// use controlled components this time, not refs
-const PopupForm = ({ closeForm, market }) => {
-  // closeForm = method to close the form; market = "live" or "reserve"
-  const [type, setType] = useState(""); //type = "buy" or "sell"
-  const [date, setDate] = useState(new Date());
-  const dhallRef = useRef(null);
-  const priceRef = useRef(null);
-  const quantRef = useRef(null);
-
-  const submit = () => {
-    if (dhallRef.current && priceRef.current && quantRef.current) {
-      const order = {
-        market: market,
-        type: type,
-        date: date,
-        dhall: dhallRef.current.value,
-        price: priceRef.current.value,
-        quantity: quantRef.current.value,
-      };
-      post("/api/order", order).then(({ msg }) => {
-        closeForm();
-        alert(msg);
-      });
-    }
-  };
-
-  return (
-    <dialog open className="popup">
-      <p className="u-l form-title">{market === "live" ? "Live" : "Reservation"} Order Form</p>
-      <br />
-      <div className="input-row">
-        <label htmlFor="form-type">Buy/Sell:&nbsp;</label>
-        <select id="form-type" value={type} onChange={(event) => setType(event.target.value)}>
-          <option value="">Select</option>
-          <option value="buy">Buy</option>
-          <option value="sell">Sell</option>
-        </select>
-      </div>
-      <div className="linebreak-2"></div>
-      <div className="input-row">
-        <label htmlFor="form-dhall">Dining Hall:&nbsp;</label>
-        <select id="form-dhall" ref={dhallRef}>
-          <option value="">Select</option>
-          <option value="maseeh">Maseeh</option>
-          <option value="nv">New Vassar</option>
-          <option value="mcc">McCormick</option>
-          <option value="baker">Baker</option>
-          <option value="simmons">Simmons</option>
-          <option value="next">Next</option>
-        </select>
-      </div>
-      <div className="linebreak-2"></div>
-      <div className="input-row">
-        <label htmlFor="form-price">Price: $</label>
-        <input id="form-price" type="number" ref={priceRef} />
-      </div>
-      <div className="linebreak-2"></div>
-      {type === "sell" ? (
-        <div className="input-row">
-          <label htmlFor="form-quantity">Quantity:&nbsp;</label>
-          <input id="form-quantity" type="number" defaultValue="1" ref={quantRef} />
-        </div>
-      ) : (
-        <div className="input-row u-hide">
-          <label htmlFor="form-quantity">Quantity:&nbsp;</label>
-          <input id="form-quantity" type="number" defaultValue="1" ref={quantRef} />
-        </div>
-      )}
-      {type === "sell" ? <div className="linebreak-2"></div> : null}
-      {market === "reserve" ? (
-        <div className="input-column">
-          <p>Date/Time:</p>
-          <DatePicker
-            selected={date}
-            onChange={(newDate) => setDate(newDate)}
-            timeInputLabel="Time:"
-            dateFormat="MM/dd/yyyy h:mm aa"
-            showTimeInput
-          />
-        </div>
-      ) : null}
-      {market === "reserve" ? <div className="linebreak-2"></div> : null}
-      <div className="u-width-fill u-flex-center">
-        <button onClick={closeForm} className="default-button">
-          Cancel
-        </button>
-        <button onClick={submit} className="default-button">
-          Submit
-        </button>
-      </div>
-    </dialog>
-  );
-};
-
-const Help = ({ closeHelp }) => {
-  return (
-    <dialog open className="popup help">
-      <p className="u-l">Market Help</p>
-      <div className="linebreak-2"></div>
-      <p className="u-mm">
-        Tradeswipe supports a market for live orders (i.e. buying/selling swipes in real-time) and a
-        market for reservation orders (i.e. buying/selling swipes for a scheduled future date/time).
-      </p>
-      <div className="linebreak-2"></div>
-      <p className="u-mm">
-        On this page you can view these markets; in each market, you can claim other people's orders
-        and also place your own. Note that if you claim someone's $X buy order, you're{" "}
-        <b>selling</b> a swipe for $X; if you claim someone's $X sell order, you're <b>buying</b> a
-        swipe for $X.
-      </p>
-      <div className="linebreak-2"></div>
-      <p>
-        Once you claim someone's order or someone claims your order, a match is made and the order
-        is taken off the market. You can view your matches on the Match page. If you have a change
-        of plans, you can also cancel the orders you've placed.
-      </p>
-      <div className="linebreak-2"></div>
-      <p className="u-width-fill">
-        <b>Note: if you'd like to donate swipes, simply place a sell order for $0.</b>
-      </p>
-      <br />
-
-      <button onClick={closeHelp} className="default-button">
-        Close
-      </button>
-    </dialog>
-  );
-};
+import Help from "./market-help.js";
+import PopupForm from "./market-form.js";
 
 //given a filter, creates display_order function with this filter
 //filter obj has keys market, dhall, type, meal, and day
@@ -257,55 +130,53 @@ const OrderBox = ({ market, dhall, type, meal, mine, day }) => {
 
 // keep the popup elements' display as a state
 const Market = ({ user, loggedIn }) => {
+  const [page, setPage] = useState("market"); //"market" or "match"
   const [formOpen, setFormOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [market, setMarket] = useState("");
+  const [market, setMarket] = useState("any");
   const [dhall, setDhall] = useState("any");
-  const [type, setType] = useState("any"); //type="buy" or "sell"
+  const [type, setType] = useState("any"); //"buy" or "sell"
   const [meal, setMeal] = useState("any"); //"breakfast", "lunch", "dinner", "late night"
   const [mine, setMine] = useState("false"); //"true" or "false"; whether order is mine
   const [day, setDay] = useState("any"); //"true" or "false"; whether order is mine
 
-  const openForm = () => {
-    if (market) setFormOpen(true);
-    else alert("You must select a market before ordering!");
-  };
+  const setPageMarket = () => setPage("market");
+  const setPageMatch = () => setPage("match");
+  const openForm = () => setFormOpen(true);
   const closeForm = () => setFormOpen(false);
   const openHelp = () => setHelpOpen(true);
   const closeHelp = () => setHelpOpen(false);
-  const setLive = () => setMarket("live");
-  const setReserve = () => setMarket("reserve");
 
   if (!loggedIn) return <NotLoggedIn />;
 
   return (
     <div className="page-container styled-page-container">
-      <p className="u-xl">Market</p>
+      {page === "market" ? <p className="u-xl">Market</p> : <p className="u-xl">My Matches</p>}
       <br />
       {formOpen ? <PopupForm closeForm={closeForm} market={market} className="form" /> : null}
-      {helpOpen ? <Help closeHelp={closeHelp} /> : null}
+      {helpOpen ? <Help closeHelp={closeHelp} page={page} /> : null}
       <div className="market-box">
         <div className="u-flex-center">
           <button className="img-button left-help" onClick={openHelp}>
             <img src="/assets/help2.png" className="market-icon" />
           </button>
           <div className="u-flex-center">
-            {market === "live" ? (
-              <button className="filter-button live-button selected" onClick={setLive}>
-                <p className="u-mm">Live Market</p>
+            {page === "market" ? (
+              <button className="filter-button market-button selected" onClick={setPageMarket}>
+                <p className="u-mm">View Market</p>
               </button>
             ) : (
-              <button className="filter-button live-button deselected" onClick={setLive}>
-                <p className="u-mm">Live Market</p>
+              <button className="filter-button market-button deselected" onClick={setPageMarket}>
+                <p className="u-mm">View Market</p>
               </button>
             )}
-            {market === "reserve" ? (
-              <button className="filter-button reserve-button selected" onClick={setReserve}>
-                <p className="u-mm">Reservations</p>
+            {page === "market" ? (
+              <button className="filter-button match-button deselected" onClick={setPageMatch}>
+                <p className="u-mm">My Matches</p>
               </button>
             ) : (
-              <button className="filter-button reserve-button deselected" onClick={setReserve}>
-                <p className="u-mm">Reservations</p>
+              <button className="filter-button match-button selected" onClick={setPageMatch}>
+                <p className="u-mm">My Matches</p>
               </button>
             )}
           </div>
@@ -315,6 +186,20 @@ const Market = ({ user, loggedIn }) => {
         </div>
         <br />
         <div className="u-flex u-justify-center u-align-center market-dropdown u-wrap">
+          <div className="dropdown-menu u-flex u-width-fit">
+            <label htmlFor="select-market" className="u-mm">
+              Order For:&nbsp;
+            </label>
+            <select
+              id="select-market"
+              value={market}
+              onChange={(event) => setMarket(event.target.value)}
+            >
+              <option value="any">Any</option>
+              <option value="live">Now</option>
+              <option value="reserve">Later</option>
+            </select>
+          </div>
           <div className="dropdown-menu u-flex u-width-fit">
             <label htmlFor="select-dhall" className="u-mm">
               Dining Hall:&nbsp;

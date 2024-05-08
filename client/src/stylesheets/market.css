@@ -19,11 +19,11 @@
   border: 1px solid white;
 }
 
-.live-button {
+.market-button {
   background: rgb(247, 122, 122);
 }
 
-.reserve-button {
+.match-button {
   background: #93ccea;
 }
 
