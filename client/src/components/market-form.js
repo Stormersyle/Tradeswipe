@@ -3,10 +3,10 @@ import { post } from "../utilities.js";
 
 import DatePicker from "react-datepicker";
 
-// use controlled components this time, not refs
-const PopupForm = ({ closeForm, market }) => {
-  // closeForm = method to close the form; market = "live" or "reserve"
+const PopupForm = ({ closeForm }) => {
+  // closeForm = method to close the form
   const [type, setType] = useState(""); //type = "buy" or "sell"
+  const [market, setMarket] = useState(""); //market = "live" or "reserve"
   const [date, setDate] = useState(new Date());
   const dhallRef = useRef(null);
   const priceRef = useRef(null);
@@ -31,7 +31,7 @@ const PopupForm = ({ closeForm, market }) => {
 
   return (
     <dialog open className="popup">
-      <p className="u-l form-title">{market === "live" ? "Live" : "Reservation"} Order Form</p>
+      <p className="u-l form-title">Order Form</p>
       <br />
       <div className="input-row">
         <label htmlFor="form-type">Buy/Sell:&nbsp;</label>
@@ -39,6 +39,15 @@ const PopupForm = ({ closeForm, market }) => {
           <option value="">Select</option>
           <option value="buy">Buy</option>
           <option value="sell">Sell</option>
+        </select>
+      </div>
+      <div className="linebreak-2"></div>
+      <div className="input-row">
+        <label htmlFor="form-market">For:&nbsp;</label>
+        <select id="form-market" value={market} onChange={(event) => setMarket(event.target.value)}>
+          <option value="">Select</option>
+          <option value="live">Now</option>
+          <option value="reserve">Later</option>
         </select>
       </div>
       <div className="linebreak-2"></div>

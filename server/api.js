@@ -121,7 +121,7 @@ const validate_order = async (req, res, next) => {
   const { market, type, date, dhall, price, quantity } = req.body;
   if (!(market && type && date && dhall && (price || price === 0) && quantity))
     return res.send({ msg: "not compelete" });
-  const user_doc = await User.findById(req.user._id);
+  // const user_doc = await User.findById(req.user._id);
   // if (type === "buy") {
   //   if (!user_doc.is_buyer)
   //     return res.send({ msg: "Not an authorized buyer! Please activate in your profile." });

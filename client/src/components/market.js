@@ -5,125 +5,51 @@ import Waiting from "./waiting.js";
 import NotLoggedIn from "./not_logged_in.js";
 import ClientSocket from "../client-socket.js";
 
+import Help from "./market-help.js";
+import PopupForm from "./market-form.js";
+import OrderBox from "./market-orders.js";
+import MatchBox from "./market-matches.js";
+import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
 import "../stylesheets/market.css";
 
-import Help from "./market-help.js";
-import PopupForm from "./market-form.js";
+const DatePopup = ({ date, setDateFilter, setDate }) => {
+  const [tempDate, setTempDate] = useState(new Date()); //date selected in the popup
 
-//given a filter, creates display_order function with this filter
-//filter obj has keys market, dhall, type, meal, and day
-const create_display_order = (filter) => {
-  const display_order = (order) => {
-    if (order.market != filter.market) return null;
-    if (filter.mine === "true" && order.mine === "false") return null;
-    if (order.type != filter.type && filter.type != "any") return null;
-    if (order.dhall != filter.dhall && filter.dhall != "any") return null;
-    if (filter.market === "reserve") {
-      if (order.meal != filter.meal && filter.meal != "any") return null;
-      if (getDateTime(order.date).dayOfWeek != filter.day && filter.day != "any") return null;
-    }
+  const closeDatePopup = () => {
+    if (date === "any") setDateFilter("none");
+    else setDateFilter("selected");
+  };
 
-    return (
-      <div key={order._id} className="order">
-        <div className="linebreak-1"></div>
-        <p>
-          {convertToDisplay(order.type)} for: ${order.price.toFixed(2)}
-        </p>
-        <div className="linebreak-1"></div>
-        <p>{convertToDisplay(order.dhall)}</p>
-        <div className="linebreak-1"></div>
-        {order.market === "reserve" ? (
-          <div className="u-width-fill u-flex-col">
-            <p>
-              <span className="mobile-hide">Date:&nbsp;</span>
-              {getDateTime(order.date).date}
-            </p>
-            <div className="linebreak-1"></div>
-            <p>
-              <span className="mobile-hide">Time:&nbsp;</span>
-              {getDateTime(order.date).time}
-            </p>
-            <div className="linebreak-1"></div>
-            <p>
-              <span className="mobile-hide">Meal:&nbsp;</span>
-              {convertToDisplay(order.meal)}
-            </p>
-            <div className="linebreak-1"></div>
-          </div>
-        ) : null}
-        {order.mine === "true" ? (
-          <button
-            className="cancel-button"
-            onClick={() => post("/api/cancel_order", { order_id: order._id })}
-          >
+  const submit = () => {
+    if (tempDate) setDate(tempDate), setDateFilter("selected");
+    else closeDatePopup();
+  };
+
+  return (
+    <div>
+      <dialog open className="popup">
+        <p className="u-l">Select Date</p>
+        <div className="linebreak-2"></div>
+        <div className="input-column">
+          <p>Date/Time:</p>
+          <DatePicker
+            selected={tempDate}
+            onChange={(newDate) => setTempDate(newDate)}
+            dateFormat="MM/dd/yyyy"
+          />
+        </div>
+        <br />
+        <div className="u-width-fill u-flex-center">
+          <button onClick={closeDatePopup} className="default-button">
             Cancel
           </button>
-        ) : (
-          <button
-            className="claim-button"
-            onClick={() => post("/api/claim_order", { order_id: order._id })}
-          >
-            Claim
+          <button onClick={submit} className="default-button">
+            Submit
           </button>
-        )}
-      </div>
-    );
-  };
-  return display_order;
-};
-
-const OrderBox = ({ market, dhall, type, meal, mine, day }) => {
-  const [orders, setOrders] = useState(null);
-
-  const init = useCallback(() => {
-    get("/api/orders").then((order_arr) => setOrders(order_arr));
-  }, []);
-
-  useEffect(() => {
-    init();
-    ClientSocket.listen("update_order_book", init);
-    return () => ClientSocket.remove_listener("update_order_book", init);
-  }, []); //also call init() whenever socket tells us to update
-
-  if (!orders) return <Waiting />;
-  if (!market)
-    return (
-      <div className="u-width-fill ">
-        <p className="u-mm select-instructions">
-          Select a market (live or reservation) to view orders.
-        </p>
-      </div>
-    );
-  if (market === "live")
-    return (
-      <div className="order-box">
-        {orders.map(
-          create_display_order({
-            market: market,
-            dhall: dhall,
-            type: type,
-            meal: meal,
-            mine: mine,
-            day: day,
-          })
-        )}
-      </div>
-    );
-  return (
-    <div className="order-box">
-      {orders
-        .map(
-          create_display_order({
-            market: market,
-            dhall: dhall,
-            type: type,
-            meal: meal,
-            mine: mine,
-            day: day,
-          })
-        )
-        .reverse()}
+        </div>
+      </dialog>
     </div>
   );
 };
@@ -133,12 +59,13 @@ const Market = ({ user, loggedIn }) => {
   const [page, setPage] = useState("market"); //"market" or "match"
   const [formOpen, setFormOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [market, setMarket] = useState("any");
+  const [market, setMarket] = useState("any"); //"live" or "reserve"
   const [dhall, setDhall] = useState("any");
   const [type, setType] = useState("any"); //"buy" or "sell"
   const [meal, setMeal] = useState("any"); //"breakfast", "lunch", "dinner", "late night"
   const [mine, setMine] = useState("false"); //"true" or "false"; whether order is mine
-  const [day, setDay] = useState("any"); //"true" or "false"; whether order is mine
+  const [date, setDate] = useState("any"); //filter by date
+  const [dateFilter, setDateFilter] = useState("any"); //"none", "select", "select new"
 
   const setPageMarket = () => setPage("market");
   const setPageMatch = () => setPage("match");
@@ -180,9 +107,15 @@ const Market = ({ user, loggedIn }) => {
               </button>
             )}
           </div>
-          <button className="img-button right-plus" onClick={openForm}>
-            <img src="/assets/plus.png" className="market-icon" />
-          </button>
+          {page === "market" ? (
+            <button className="img-button right-plus" onClick={openForm}>
+              <img src="/assets/plus.png" className="market-icon" />
+            </button>
+          ) : (
+            <button className="img-button right-plus u-hide-but-keep-shape">
+              <img src="/assets/plus.png" className="market-icon" />
+            </button>
+          )}
         </div>
         <br />
         <div className="u-flex u-justify-center u-align-center market-dropdown u-wrap">
@@ -238,7 +171,7 @@ const Market = ({ user, loggedIn }) => {
             </select>
           </div>
         </div>
-        {market === "reserve" ? (
+        {market !== "live" ? (
           <div className="u-flex u-justify-center u-align-center market-dropdown u-wrap">
             <div className="dropdown-menu u-flex u-width-fit">
               <label htmlFor="select-meal" className="u-mm">
@@ -257,24 +190,33 @@ const Market = ({ user, loggedIn }) => {
               </select>
             </div>
             <div className="dropdown-menu u-flex u-width-fit">
-              <label htmlFor="select-day" className="u-mm">
-                Day:&nbsp;
+              <label htmlFor="select-date-filter" className="u-mm">
+                Filter by date:&nbsp;
               </label>
-              <select id="select-day" value={day} onChange={(event) => setDay(event.target.value)}>
-                <option value="any">Any</option>
-                <option value="Mon">Monday</option>
-                <option value="Tue">Tuesday</option>
-                <option value="Wed">Wednesday</option>
-                <option value="Thu">Thursday</option>
-                <option value="Fri">Friday</option>
-                <option value="Sat">Saturday</option>
-                <option value="Sun">Sunday</option>
+              <select
+                id="select-date-filter"
+                value={dateFilter}
+                onChange={(event) => {
+                  if (event.target.value === "none") setDate("any");
+                  setDateFilter(event.target.value);
+                }}
+              >
+                <option value="none">All Dates</option>
+                {date === "any" ? null : <option value="selected">Last Selected</option>}
+                <option value="select new">Select New</option>
               </select>
             </div>
           </div>
         ) : null}
+        {dateFilter === "select new" ? (
+          <DatePopup setDateFilter={setDateFilter} setDate={setDate} />
+        ) : null}
         <br />
-        <OrderBox market={market} dhall={dhall} type={type} meal={meal} mine={mine} day={day} />
+        {page === "market" ? (
+          <OrderBox market={market} dhall={dhall} type={type} meal={meal} mine={mine} date={date} />
+        ) : (
+          <MatchBox market={market} dhall={dhall} type={type} meal={meal} mine={mine} date={date} />
+        )}
       </div>
     </div>
   );
