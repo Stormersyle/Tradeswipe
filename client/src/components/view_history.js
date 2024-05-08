@@ -26,9 +26,9 @@ const create_display_transaction = (filter) => {
         <p>
           <b>Your role:</b> {convertToDisplay(transaction.my_role)}
         </p>
-        <p>
+        {/* <p>
           <b>Price:</b> ${transaction.price.toFixed(2)}
-        </p>
+        </p> */}
         <p>
           <b>Dining Hall:</b> {convertToDisplay(transaction.dhall)}
         </p>

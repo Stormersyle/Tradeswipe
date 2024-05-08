@@ -19,7 +19,8 @@ const PopupForm = ({ closeForm }) => {
         type: type,
         date: date,
         dhall: dhallRef.current.value,
-        price: priceRef.current.value,
+        // price: priceRef.current.value,
+        price: "0", //for now, hardcode the price to 0
         quantity: quantRef.current.value,
       };
       post("/api/order", order).then(({ msg }) => {
@@ -64,11 +65,14 @@ const PopupForm = ({ closeForm }) => {
         </select>
       </div>
       <div className="linebreak-2"></div>
-      <div className="input-row">
+
+      {/* for now, hide price input field */}
+      <div className="input-row u-hide">
         <label htmlFor="form-price">Price: $</label>
         <input id="form-price" type="number" ref={priceRef} />
       </div>
-      <div className="linebreak-2"></div>
+      {/* <div className="linebreak-2"></div> */}
+
       {type === "sell" ? (
         <div className="input-row">
           <label htmlFor="form-quantity">Quantity:&nbsp;</label>

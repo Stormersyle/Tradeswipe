@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { get, post, convertToDisplay, getDateTime } from "../utilities.js";
 import Waiting from "./waiting.js";
-import NotLoggedIn from "./not_logged_in.js";
 import ClientSocket from "../client-socket.js";
 import "../stylesheets/market.css";
 
@@ -31,21 +30,23 @@ const MatchInfo = ({ match_id, my_role, state }) => {
         <b>Your Match</b>
       </p>
       <p>Name: {person.name}</p>
+      <p>Kerb: {person.kerb}</p>
       <p>Phone Number: {person.phone_number}</p>
-      {my_role === "buyer" ? <p>Venmo Username: {person.venmo_username}</p> : null}
+      {/* {my_role === "buyer" ? <p>Venmo Username: {person.venmo_username}</p> : null} */}
       {my_role === "buyer" ? <p>Directions: {person.directions}</p> : null}
     </div>
   );
 };
 
 //given a filter, creates display_match function with this filter
-//filter: properties market, dhall, meal, state
+//filter: properties market, dhall, meal, state, date
+//meal, date filters only apply for reserve matches
 const create_display_match = (filter) => {
   const datesEqual = (date1, date2) => getDateTime(date1).date === getDateTime(date2).date;
   const display_match = (match) => {
     if (filter.market !== match.market && filter.market !== "any") return null;
+    if (filter.dhall !== match.dhall && filter.dhall !== "any") return null;
     if (filter.market !== "live") {
-      if (filter.dhall !== match.dhall && filter.dhall !== "any") return null;
       if (filter.meal !== match.meal && filter.meal !== "any") return null;
       if (!datesEqual(filter.date, match.date) && filter.date !== "any") return null;
     }
@@ -53,12 +54,12 @@ const create_display_match = (filter) => {
     if (match.my_role === "seller" && match.seller_finished) return null;
 
     return (
+      //leave out price for now
       <div key={match._id} className="match">
         <div className="linebreak-1"></div>
-        <p>
-          Your role: {convertToDisplay(match.my_role)} | Price: ${match.price.toFixed(2)}
-        </p>
+        <p>Your role: {convertToDisplay(match.my_role)}</p>
         <p>Dining Hall: {convertToDisplay(match.dhall)}</p>
+        <p>For {convertToDisplay(match.market)}</p>
         {match.market === "reserve" ? (
           <div>
             <p>

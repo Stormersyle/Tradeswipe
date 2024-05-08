@@ -86,15 +86,17 @@ export function convertToDisplay(name) {
     baker: "Baker",
     simmons: "Simmons",
     next: "Next House",
-    buy: "Buy",
-    sell: "Sell",
+    buy: "Request",
+    sell: "Donate",
     breakfast: "Breakfast",
     lunch: "Lunch",
     dinner: "Dinner",
     "late night": "Late Night",
     other: "Other",
-    buyer: "Buyer",
-    seller: "Seller",
+    buyer: "Recipient",
+    seller: "Donor",
+    live: "Now",
+    reserve: "Later",
   };
   return dict[name];
 }
@@ -123,6 +125,7 @@ export function getDateTime(date) {
   // Format the date/time string
   return {
     date: `${dayOfWeek}, ${month}/${day}`,
+    bareDate: `${month}/${day}`,
     time: `${formattedHours}:${paddedMinutes} ${ampm}`,
     dayOfWeek: dayOfWeek,
   };

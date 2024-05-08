@@ -7,6 +7,10 @@ import ClientSocket from "../client-socket.js";
 //filter obj has keys market, dhall, type, meal, and date
 const create_display_order = (filter) => {
   const datesEqual = (date1, date2) => getDateTime(date1).date === getDateTime(date2).date;
+  const isToday = (date) => {
+    const today = new Date();
+    return datesEqual(date, today);
+  };
   const display_order = (order) => {
     if (order.market !== filter.market && filter.market !== "any") return null;
     if (filter.mine === "true" && order.mine === "false") return null;
@@ -20,31 +24,31 @@ const create_display_order = (filter) => {
     return (
       <div key={order._id} className="order">
         <div className="linebreak-1"></div>
-        <p>
-          {convertToDisplay(order.type)} for: ${order.price.toFixed(2)}
-        </p>
+        <p>{order.type === "buy" ? "Swipe Request" : "Swipe Donation"}</p>
         <div className="linebreak-1"></div>
         <p>{convertToDisplay(order.dhall)}</p>
+        <div className="linebreak-2"></div>
+        {order.market === "live" ? <p>For Now</p> : <p>For Later</p>}
         <div className="linebreak-1"></div>
-        {order.market === "reserve" ? (
-          <div className="u-width-fill u-flex-col">
-            <p>
-              <span className="mobile-hide">Date:&nbsp;</span>
-              {getDateTime(order.date).date}
-            </p>
-            <div className="linebreak-1"></div>
-            <p>
-              <span className="mobile-hide">Time:&nbsp;</span>
-              {getDateTime(order.date).time}
-            </p>
-            <div className="linebreak-1"></div>
-            <p>
-              <span className="mobile-hide">Meal:&nbsp;</span>
-              {convertToDisplay(order.meal)}
-            </p>
-            <div className="linebreak-1"></div>
-          </div>
-        ) : null}
+        <div className="u-width-fill u-flex-col">
+          <p>
+            <span className="mobile-hide">Date:&nbsp;</span>
+            {isToday(order.date) ? "Today" : getDateTime(order.date).date}
+          </p>
+          <div className="linebreak-1"></div>
+          <p>
+            <span className="mobile-hide">Time:&nbsp;</span>
+            {order.market === "live" ? "Now" : getDateTime(order.date).time}
+          </p>
+          <div className="linebreak-1"></div>
+          <p>
+            <span className="mobile-hide">Meal:&nbsp;</span>
+            {convertToDisplay(order.meal)}
+          </p>
+          <div className="linebreak-1"></div>
+        </div>
+        <p>Order ID: {order._id.slice(-4)}</p>
+        <div className="linebreak-1"></div>
         {order.mine === "true" ? (
           <button
             className="cancel-button"

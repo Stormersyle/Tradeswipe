@@ -207,24 +207,26 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
   const { order_id } = req.body;
   const order = await Order.findById(order_id);
   if (!order) return res.send({ msg: "claim failed!" });
-  const user = await User.findById(req.user._id);
-  if (order.type === "buy" && !user.is_seller) {
-    //claim a buy order; i.e. we're selling
-    SocketManager.emit_to_user(
-      user._id,
-      "notif",
-      "Not authorized to sell! Please activate in your profile"
-    );
-    return res.send({});
-  }
-  if (order.type === "sell" && !user.is_buyer) {
-    SocketManager.emit_to_user(
-      user._id,
-      "notif",
-      "Not authorized to buy! Please activate in your profile"
-    );
-    return res.send({});
-  }
+
+  //for now, remove buyer and seller check
+  // const user = await User.findById(req.user._id);
+  // if (order.type === "buy" && !user.is_seller) {
+  //   //claim a buy order; i.e. we're selling
+  //   SocketManager.emit_to_user(
+  //     user._id,
+  //     "notif",
+  //     "Not authorized to sell! Please activate in your profile"
+  //   );
+  //   return res.send({});
+  // }
+  // if (order.type === "sell" && !user.is_buyer) {
+  //   SocketManager.emit_to_user(
+  //     user._id,
+  //     "notif",
+  //     "Not authorized to buy! Please activate in your profile"
+  //   );
+  //   return res.send({});
+  // }
 
   //now: make the match
   const { user_id, market, type, dhall, price, date, meal } = order;
@@ -318,6 +320,7 @@ router.get("/other_person", auth.ensureLoggedIn, async (req, res) => {
   }
   return res.send({
     name: other_person.name,
+    kerb: other_person.kerb,
     phone_number: other_person.phone_number,
     venmo_username: other_person.venmo_username,
     directions: other_person.directions,

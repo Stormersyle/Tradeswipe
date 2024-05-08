@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { get, post, convertToDisplay, getDateTime } from "../utilities.js";
-import Waiting from "./waiting.js";
 import NotLoggedIn from "./not_logged_in.js";
-import ClientSocket from "../client-socket.js";
 
 import Help from "./market-help.js";
 import PopupForm from "./market-form.js";
@@ -120,8 +117,18 @@ const Market = ({ user, loggedIn }) => {
         <br />
         <div className="u-flex u-justify-center u-align-center market-dropdown u-wrap">
           <div className="dropdown-menu u-flex u-width-fit">
+            <label htmlFor="select-type" className="u-mm">
+              Order Type:&nbsp;
+            </label>
+            <select id="select-type" value={type} onChange={(event) => setType(event.target.value)}>
+              <option value="any">Any</option>
+              <option value="buy">Buy</option>
+              <option value="sell">Sell</option>
+            </select>
+          </div>
+          <div className="dropdown-menu u-flex u-width-fit">
             <label htmlFor="select-market" className="u-mm">
-              Order For:&nbsp;
+              For now/later:&nbsp;
             </label>
             <select
               id="select-market"
@@ -129,8 +136,8 @@ const Market = ({ user, loggedIn }) => {
               onChange={(event) => setMarket(event.target.value)}
             >
               <option value="any">Any</option>
-              <option value="live">Now</option>
-              <option value="reserve">Later</option>
+              <option value="live">For Now</option>
+              <option value="reserve">For Later</option>
             </select>
           </div>
           <div className="dropdown-menu u-flex u-width-fit">
@@ -149,16 +156,6 @@ const Market = ({ user, loggedIn }) => {
               <option value="baker">Baker</option>
               <option value="simmons">Simmons</option>
               <option value="next">Next</option>
-            </select>
-          </div>
-          <div className="dropdown-menu u-flex u-width-fit">
-            <label htmlFor="select-type" className="u-mm">
-              Order Type:&nbsp;
-            </label>
-            <select id="select-type" value={type} onChange={(event) => setType(event.target.value)}>
-              <option value="any">Any</option>
-              <option value="buy">Buy</option>
-              <option value="sell">Sell</option>
             </select>
           </div>
           <div className="dropdown-menu u-flex u-width-fit">
@@ -202,7 +199,9 @@ const Market = ({ user, loggedIn }) => {
                 }}
               >
                 <option value="none">All Dates</option>
-                {date === "any" ? null : <option value="selected">Last Selected</option>}
+                {date === "any" ? null : (
+                  <option value="selected">{getDateTime(date).bareDate}</option>
+                )}
                 <option value="select new">Select New</option>
               </select>
             </div>
