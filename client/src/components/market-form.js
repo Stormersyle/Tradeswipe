@@ -35,16 +35,16 @@ const PopupForm = ({ closeForm }) => {
       <p className="u-l form-title">Order Form</p>
       <br />
       <div className="input-row">
-        <label htmlFor="form-type">Buy/Sell:&nbsp;</label>
+        <label htmlFor="form-type">Order Type:&nbsp;</label>
         <select id="form-type" value={type} onChange={(event) => setType(event.target.value)}>
           <option value="">Select</option>
-          <option value="buy">Buy</option>
-          <option value="sell">Sell</option>
+          <option value="buy">Request</option>
+          <option value="sell">Donate</option>
         </select>
       </div>
       <div className="linebreak-2"></div>
       <div className="input-row">
-        <label htmlFor="form-market">For:&nbsp;</label>
+        <label htmlFor="form-market">For Now/Later:&nbsp;</label>
         <select id="form-market" value={market} onChange={(event) => setMarket(event.target.value)}>
           <option value="">Select</option>
           <option value="live">Now</option>

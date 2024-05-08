@@ -83,7 +83,7 @@ router.post("/update_profile", auth.ensureLoggedIn, validate_profile, async (req
   });
   const matched_user_ids = matches.map(extract_other_person); //array of IDs of ppl we're matched with
   for (let ID of matched_user_ids) SocketManager.emit_to_user(ID, "update_matches");
-  res.status(200).send({});
+  res.status(200).send({ ok: true });
 });
 
 const get_meal = (date) => {

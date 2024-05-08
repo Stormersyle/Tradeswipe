@@ -24,29 +24,33 @@ const create_display_order = (filter) => {
     return (
       <div key={order._id} className="order">
         <div className="linebreak-1"></div>
-        <p>{order.type === "buy" ? "Swipe Request" : "Swipe Donation"}</p>
-        <div className="linebreak-1"></div>
-        <p>{convertToDisplay(order.dhall)}</p>
-        <div className="linebreak-2"></div>
-        {order.market === "live" ? <p>For Now</p> : <p>For Later</p>}
-        <div className="linebreak-1"></div>
-        <div className="u-width-fill u-flex-col">
-          <p>
-            <span className="mobile-hide">Date:&nbsp;</span>
-            {isToday(order.date) ? "Today" : getDateTime(order.date).date}
-          </p>
-          <div className="linebreak-1"></div>
-          <p>
-            <span className="mobile-hide">Time:&nbsp;</span>
-            {order.market === "live" ? "Now" : getDateTime(order.date).time}
-          </p>
-          <div className="linebreak-1"></div>
-          <p>
-            <span className="mobile-hide">Meal:&nbsp;</span>
-            {convertToDisplay(order.meal)}
-          </p>
-          <div className="linebreak-1"></div>
-        </div>
+        <p>
+          <b>{order.type === "buy" ? "Swipe Request" : "Swipe Donation"}</b>
+        </p>
+        <div className="linebreak-0pt5"></div>
+        <p>At: {convertToDisplay(order.dhall)}</p>
+        <div className="linebreak-0pt5"></div>
+        <p>For: {order.market === "live" ? "Right Now" : "Later"}</p>
+        <div className="linebreak-0pt5"></div>
+        {order.market === "reserve" ? (
+          <div className="u-width-fill u-flex-col">
+            <p>
+              <span className="mobile-hide">Date:&nbsp;</span>
+              {isToday(order.date) ? "Today" : getDateTime(order.date).date}
+            </p>
+            {/* <div className="linebreak-0pt5"></div> */}
+            <p>
+              <span className="mobile-hide">Time:&nbsp;</span>
+              {getDateTime(order.date).time}
+            </p>
+            {/* <div className="linebreak-0pt5"></div> */}
+            <p>
+              <span className="mobile-hide">Meal:&nbsp;</span>
+              {convertToDisplay(order.meal)}
+            </p>
+            <div className="linebreak-0pt5"></div>
+          </div>
+        ) : null}
         <p>Order ID: {order._id.slice(-4)}</p>
         <div className="linebreak-1"></div>
         {order.mine === "true" ? (

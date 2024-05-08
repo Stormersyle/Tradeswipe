@@ -102,16 +102,16 @@ const StatsBox = () => {
       <p className="u-l u-flex u-justify-center">Transaction History</p>
       <div className="linebreak-1"></div>
       <p className="u-mm">
-        <b>Total Swipes Bought:</b> {stats.bought}
+        <b>Total Swipes Received:</b> {stats.bought}
       </p>
       <div className="linebreak-1"></div>
       <p className="u-mm">
-        <b>Total Swipes Sold:</b> {stats.sold}
+        <b>Total Swipes Donated:</b> {stats.sold}
       </p>
-      <div className="linebreak-1"></div>
+      {/* <div className="linebreak-1"></div>
       <p className="u-mm">
         <b>Total Money Saved:</b> ${stats.money_saved.toFixed(2)}
-      </p>
+      </p> */}
       <br />
       <div className="u-flex u-justify-center">
         <button className="default-button" onClick={() => navigate("/history")}>

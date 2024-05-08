@@ -7,7 +7,7 @@ const NotLoggedIn = () => {
       <div className="linebreak-2"></div>
       <p className="u-mm">
         You are trying to access a page that is only accessible for logged in users. To access this
-        page, please sign in using Google.
+        page, please sign in using Touchstone.
       </p>
     </div>
   );
