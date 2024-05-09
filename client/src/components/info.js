@@ -12,15 +12,15 @@ const Info = ({ loggedIn }) => {
           Welcome to Tradeswipe! Tradeswipe is a platform for MIT students to buy/sell and
           receive/donate meal swipes, both in real-time and asynchronously. If you always have extra
           meal swipes and hate to see them go to waste, or if you're in a CFY dorm and would like to
-          eat at a dining hall for free/cheap, then this is just the website for you!
+          eat at a dining hall for free, then this is just the website for you!
         </p>
         <div className="linebreak-2"></div>
         <p className="u-mm">
           Tradeswipe was made with the goal of reducing the massive number of wasted meal swipes and
           helping fix food insecurity at MIT. It was named Tradeswipe because it was originally
           designed to be a platform for buying and selling swipes; however, due to unexpectedly high
-          controversy regarding the idea of selling swipes, it will only allow donations until there
-          is significant evidence in favor of allowing selling.
+          controversy regarding the idea of selling swipes, the app will be donation-only for at
+          least the near future.
         </p>
         <br />
       </div>
