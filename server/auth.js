@@ -7,8 +7,7 @@ require("dotenv").config();
 
 /* Touchstone (OIDC - OpenID Connect) */
 
-// const BASEURL = process.env.BASEURL ?? "http://localhost:5050"
-const BASEURL = "http://localhost:5050";
+const BASEURL = process.env.BASEURL;
 const OIDC_REDIRECT_URI = `${BASEURL}/api/login/touchstone`;
 
 const touchstoneIssuerPromise = Issuer.discover("https://petrock.mit.edu");
