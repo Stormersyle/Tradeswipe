@@ -60,9 +60,9 @@ const Info = ({ loggedIn }) => {
         <p className="u-l u-width-fill">Questions & Feedback</p>
         <div className="linebreak-1"></div>
         <p className="u-mm">
-          If you have any questions or feedback about Tradeswipe, please email{" "}
-          <a href="mailto:tradeswipe-mit@gmail.com">tradeswipe-mit@gmail.com</a>. I read and respond
-          to all emails.
+          If you have any questions or feedback about Tradeswipe, or if you find a bug, please email
+          me directly at <a href="mailto:azyuan@mit.edu">azyuan@mit.edu</a>. I read and respond to
+          all emails.
         </p>
       </div>
       <br />
