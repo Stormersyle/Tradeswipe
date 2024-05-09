@@ -51,7 +51,7 @@ const create_display_order = (filter) => {
             <div className="linebreak-0pt5"></div>
           </div>
         ) : null}
-        <p>Order ID: {order._id.slice(-4)}</p>
+        <p>Order ID: {order._id.slice(-2)}</p>
         <div className="linebreak-1"></div>
         {order.mine === "true" ? (
           <button

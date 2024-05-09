@@ -104,6 +104,8 @@ export function convertToDisplay(name) {
 export function getDateTime(date) {
   const week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+  //convert to Date type if necessary
+  if (typeof date === "string") date = new Date(date);
   // Convert to EST timezone
   const estTime = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" }));
 

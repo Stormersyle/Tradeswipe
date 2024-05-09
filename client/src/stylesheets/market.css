@@ -74,7 +74,7 @@
   width: fit-content;
   height: fit-content;
   padding: 2vh 2vw;
-  position: fixed; /* Use fixed to keep it placed relative to the viewport */
+  position: fixed; /* Use fixed to remove it from the normal document flow and keep it placed relative to the viewport */
   top: 5vh;
   /* left: 20vw; */
   left: 50%; /* Position the left edge of the element in the middle of the viewport */
@@ -273,4 +273,44 @@
   width: 100%;
   border-top: 1px solid white;
   border-left: 0.5px solid white;
+}
+
+/* styling for chat */
+.chat-icon {
+  height: 30px;
+  margin: 0 6px 0 0;
+}
+
+.chat-box {
+  width: 80vw;
+  max-width: 700px;
+  height: fit-content;
+  max-height: 70vh;
+}
+
+.close-chat {
+  padding: 0 !important;
+}
+
+.x-icon {
+  height: 18px;
+}
+
+.messages-container {
+  max-height: 100%;
+  overflow-y: scroll;
+}
+.send-icon {
+  height: 20px;
+  margin: 0 0.5vw;
+}
+
+@media only screen and (max-width: 800px) {
+  .chat-icon {
+    height: 20px;
+    margin: 0 4px 0 0;
+  }
+  .send-icon {
+    margin: 0 1vw;
+  }
 }

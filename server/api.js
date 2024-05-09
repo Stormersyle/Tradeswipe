@@ -7,6 +7,7 @@ const User = require("./models/user.js");
 const Order = require("./models/order.js");
 const Match = require("./models/match.js");
 const Transaction = require("./models/transaction.js");
+const Message = require("./models/message.js");
 
 const router = express.Router(); //mounted on /api
 
@@ -256,26 +257,26 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
       SocketManager.emit_to_user(
         newMatch.seller_id,
         "notif",
-        "New live match! Go to Match page to view."
+        "New match! Go to My Matches tab to view."
       );
     if (buyer.live_notifs)
       SocketManager.emit_to_user(
         newMatch.buyer_id,
         "notif",
-        "New live match! Go to Match page to view."
+        "New match! Go to My Matches tab to view."
       );
   } else {
     if (seller.reserve_notifs)
       SocketManager.emit_to_user(
         newMatch.seller_id,
         "notif",
-        "New reservation match! Go to Match page to view."
+        "New match! Go to My Matches tab to view."
       );
     if (buyer.reserve_notifs)
       SocketManager.emit_to_user(
         newMatch.buyer_id,
         "notif",
-        "New reservation match! Go to Match page to view."
+        "New match! Go to My Matches tab to view."
       );
   }
 
@@ -343,15 +344,13 @@ router.post("/cancel_match", auth.ensureLoggedIn, async (req, res) => {
   const buyer = await User.findById(match.buyer_id);
   const seller = await User.findById(match.seller_id);
   if (match.market === "live") {
-    if (seller.live_notifs)
-      SocketManager.emit_to_user(match.seller_id, "notif", "Live match canceled!");
-    if (buyer.live_notifs)
-      SocketManager.emit_to_user(match.buyer_id, "notif", "Live match canceled!");
+    if (seller.live_notifs) SocketManager.emit_to_user(match.seller_id, "notif", "Match canceled!");
+    if (buyer.live_notifs) SocketManager.emit_to_user(match.buyer_id, "notif", "Match canceled!");
   } else {
     if (seller.reserve_notifs)
-      SocketManager.emit_to_user(match.seller_id, "notif", "Reservation match canceled!");
+      SocketManager.emit_to_user(match.seller_id, "notif", "Match canceled!");
     if (buyer.reserve_notifs)
-      SocketManager.emit_to_user(match.buyer_id, "notif", "Reservation match canceled!");
+      SocketManager.emit_to_user(match.buyer_id, "notif", "Match canceled!");
   }
 
   //now, put the order back on the market if the claimer canceled
@@ -443,6 +442,34 @@ router.get("/user_stats", auth.ensureLoggedIn, async (req, res) => {
   }
   // console.log("money saved", money_saved);
   return res.send({ bought: bought, sold: sold, money_saved: money_saved });
+});
+
+//live chat
+router.get("/messages", auth.ensureLoggedIn, (req, res) => {
+  Message.find({ match_id: req.query.match_id })
+    .sort({ date: 1 }) //sort from earliest to latest
+    .then((messages) => res.send(messages));
+});
+
+router.post("/message", auth.ensureLoggedIn, async (req, res) => {
+  const { match_id, content } = req.body;
+  const match = await Match.findById(match_id);
+  if (!match) return res.send({});
+
+  const user = await User.findById(req.user._id);
+  const sender = user.kerb.slice(-8) === "@mit.edu" ? user.kerb.slice(0, -8) : user.name;
+  const today = new Date();
+  const newMessage = new Message({
+    match_id: match_id,
+    content: content,
+    sender: sender,
+    date: today,
+  });
+  await newMessage.save();
+
+  SocketManager.emit_to_user(match.buyer_id, "new_message", newMessage);
+  SocketManager.emit_to_user(match.seller_id, "new_message", newMessage);
+  return res.send({});
 });
 
 module.exports = router;
