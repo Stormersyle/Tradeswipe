@@ -173,7 +173,7 @@ router.post("/order", auth.ensureLoggedIn, validate_order, async (req, res) => {
 });
 
 //retrive current orders
-router.get("/orders", auth.ensureLoggedIn, (req, res) => {
+router.get("/orders", auth.ensureLoggedIn, async (req, res) => {
   const strip_function = (order) => {
     return {
       _id: order._id,
@@ -187,9 +187,10 @@ router.get("/orders", auth.ensureLoggedIn, (req, res) => {
       mine: order.user_id === req.user._id.toString() ? "true" : "false",
     };
   }; //essentially, strip each order of user_id
-  Order.find()
-    .sort({ date: -1 })
-    .then((orders) => res.send(orders.map(strip_function)));
+  const liveOrders = await Order.find({ market: "live" }).sort({ date: -1 });
+  const reserveOrders = await Order.find({ market: "reserve" }).sort({ date: 1 });
+  const orders = liveOrders.concat(reserveOrders);
+  return res.send(orders.map(strip_function));
 });
 
 //cancel an order

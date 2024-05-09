@@ -71,6 +71,14 @@ const Market = ({ user, loggedIn }) => {
   const openHelp = () => setHelpOpen(true);
   const closeHelp = () => setHelpOpen(false);
 
+  const handleNotif = useCallback((msg) => {
+    if (msg === "New match! Go to My Matches tab to view.") setPage("match");
+  }, []);
+  useEffect(() => {
+    ClientSocket.listen("notify", handleNotif);
+    return () => ClientSocket.remove_listener("notify", handleNotif);
+  }, []);
+
   if (!loggedIn) return <NotLoggedIn />;
 
   return (
@@ -118,17 +126,17 @@ const Market = ({ user, loggedIn }) => {
         <div className="u-flex u-justify-center u-align-center market-dropdown u-wrap">
           <div className="dropdown-menu u-flex u-width-fit">
             <label htmlFor="select-type" className="u-mm">
-              Order Type:&nbsp;
+              Type:&nbsp;
             </label>
             <select id="select-type" value={type} onChange={(event) => setType(event.target.value)}>
               <option value="any">Any</option>
-              <option value="buy">Buy</option>
-              <option value="sell">Sell</option>
+              <option value="buy">Request</option>
+              <option value="sell">Donate</option>
             </select>
           </div>
           <div className="dropdown-menu u-flex u-width-fit">
             <label htmlFor="select-market" className="u-mm">
-              For now/later:&nbsp;
+              Timing:&nbsp;
             </label>
             <select
               id="select-market"
@@ -188,7 +196,7 @@ const Market = ({ user, loggedIn }) => {
             </div>
             <div className="dropdown-menu u-flex u-width-fit">
               <label htmlFor="select-date-filter" className="u-mm">
-                Filter by date:&nbsp;
+                Date:&nbsp;
               </label>
               <select
                 id="select-date-filter"

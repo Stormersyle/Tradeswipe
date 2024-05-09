@@ -32,7 +32,7 @@ const Home = ({ loggedIn }) => {
           <a href="api/login/touchstone/redirect">
             <div className="default-button touchstone-button u-flex u-justify-start u-align-center">
               <img src="/assets/mit.png" className="mit-logo" />
-              <p className="u-mmm">&nbsp;&nbsp;Touchstone Login&nbsp;</p>
+              <p className="u-mmm touchstone-text">&nbsp;&nbsp;Touchstone Login&nbsp;</p>
             </div>
           </a>
         </div>

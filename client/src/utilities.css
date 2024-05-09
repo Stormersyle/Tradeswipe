@@ -180,3 +180,9 @@
   opacity: 0 !important;
   cursor: default !important;
 }
+
+@media only screen and (max-width: 800px) {
+  .mobile-hide {
+    display: none !important;
+  }
+}

@@ -51,7 +51,7 @@ const create_display_order = (filter) => {
             <div className="linebreak-0pt5"></div>
           </div>
         ) : null}
-        <p>Order ID: {order._id.slice(-2)}</p>
+        <p>ID: {order._id.slice(-3)}</p>
         <div className="linebreak-1"></div>
         {order.mine === "true" ? (
           <button
@@ -96,35 +96,18 @@ const OrderBox = ({ market, dhall, type, meal, mine, date }) => {
         </p>
       </div>
     );
-  if (market === "live")
-    return (
-      <div className="order-box">
-        {orders.map(
-          create_display_order({
-            market: market,
-            dhall: dhall,
-            type: type,
-            meal: meal,
-            mine: mine,
-            date: date,
-          })
-        )}
-      </div>
-    );
   return (
     <div className="order-box">
-      {orders
-        .map(
-          create_display_order({
-            market: market,
-            dhall: dhall,
-            type: type,
-            meal: meal,
-            mine: mine,
-            date: date,
-          })
-        )
-        .reverse()}
+      {orders.map(
+        create_display_order({
+          market: market,
+          dhall: dhall,
+          type: type,
+          meal: meal,
+          mine: mine,
+          date: date,
+        })
+      )}
     </div>
   );
 };
