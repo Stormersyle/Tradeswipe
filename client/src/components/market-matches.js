@@ -5,7 +5,7 @@ import ClientSocket from "../client-socket.js";
 
 const ChatBox = ({ match_id, setChat }) => {
   const [person, setPerson] = useState(null); //person = the user we're matched with
-  const [messages, setMessages] = useState(null); //array of messages.
+  const [messages, setMessages] = useState([]); //array of messages.
   //message obj: {_id: String, match_id: String, sender: String, content: String, date: Date}
   const inputRef = useRef(null);
   const chatBoxRef = useRef(null);
@@ -78,7 +78,7 @@ const ChatBox = ({ match_id, setChat }) => {
       </div>
       <div className="linebreak-2"></div>
       <div className="messages-container" ref={chatBoxRef}>
-        {messages ? messages.map(display_message) : <p>No messages yet!</p>}
+        {messages.map(display_message)}
       </div>
       <div className="linebreak-1"></div>
       <div className="u-flex">
