@@ -84,7 +84,7 @@ const History = ({ loggedIn }) => {
         <div className="u-flex u-justify-center u-align-center market-dropdown u-wrap">
           <div className="dropdown-menu u-flex u-width-fit">
             <label htmlFor="select-market-history" className="u-mm">
-              Market:&nbsp;
+              Timing:&nbsp;
             </label>
             <select
               id="select-market-history"
@@ -93,7 +93,7 @@ const History = ({ loggedIn }) => {
             >
               <option value="any">Any</option>
               <option value="live">Live</option>
-              <option value="reserve">Reserve</option>
+              <option value="reserve">Scheduled</option>
             </select>
           </div>
           <div className="dropdown-menu u-flex u-width-fit">
