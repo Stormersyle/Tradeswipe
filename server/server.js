@@ -76,3 +76,17 @@ const port = 3000;
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+const Order = require("./models/order.js");
+const purgeOldOrders = async () => {
+  console.log("new purge!");
+  const orders = await Order.find();
+  for (let order of orders) {
+    const order_age = Date.now() - Number(order.date);
+    if (order.market === "live" && order_age > 3600000) await Order.findByIdAndDelete(order._id);
+    if (order.market === "reserve" && order_age > 0) await Order.findByIdAndDelete(order._id);
+    console.log(order_age);
+  }
+  SocketManager.emit_to_all("update_order_book");
+};
+setInterval(purgeOldOrders, 60000);
