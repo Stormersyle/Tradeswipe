@@ -281,8 +281,10 @@
 .chat-box {
   width: 80vw;
   max-width: 700px;
-  height: fit-content;
-  max-height: 70vh;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .close-chat {
@@ -293,8 +295,13 @@
   height: 18px;
 }
 
+.top-container {
+  height: 65vh;
+}
+
 .messages-container {
-  max-height: 100%;
+  /* max-height: 100%; */
+  height: fit-content;
   overflow-y: scroll;
 }
 
@@ -310,5 +317,8 @@
   }
   .send-icon {
     margin: 0 1vw;
+  }
+  .top-container {
+    height: 60vh;
   }
 }

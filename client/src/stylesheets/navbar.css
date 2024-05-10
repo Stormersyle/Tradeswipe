@@ -105,7 +105,7 @@
   width: 26px;
   height: 26px;
   cursor: pointer;
-  z-index: 2;
+  z-index: 10;
 }
 .menu__btn > span,
 .menu__btn > span::before,
@@ -128,7 +128,7 @@
 .menu__box {
   display: block;
   position: fixed;
-  z-index: 1;
+  z-index: 9;
   top: 0;
   left: -100%;
   width: 300px;

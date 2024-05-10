@@ -70,17 +70,21 @@ const ChatBox = ({ match_id, setChat }) => {
 
   return (
     <dialog open className="popup chat-box">
-      <div className="u-flex u-justify-space-between u-align-start">
-        <p className="u-mmm form-title">Chatting with: {person.kerb ? person.kerb : person.name}</p>
-        <button className="img-button close-chat" onClick={() => setChat(null)}>
-          <img src="./assets/close.png" className="x-icon" />
-        </button>
+      <div className="u-flex-col top-container">
+        <div className="u-flex u-justify-space-between u-align-start">
+          <p className="u-mmm form-title">
+            Chatting with: {person.kerb ? person.kerb : person.name}
+          </p>
+          <button className="img-button close-chat" onClick={() => setChat(null)}>
+            <img src="./assets/close.png" className="x-icon" />
+          </button>
+        </div>
+        <div className="linebreak-2"></div>
+        <div className="messages-container" ref={chatBoxRef}>
+          {messages.map(display_message)}
+        </div>
+        <div className="linebreak-1"></div>
       </div>
-      <div className="linebreak-2"></div>
-      <div className="messages-container" ref={chatBoxRef}>
-        {messages.map(display_message)}
-      </div>
-      <div className="linebreak-1"></div>
       <div className="u-flex">
         <input
           type="text"
