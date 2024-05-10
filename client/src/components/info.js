@@ -52,7 +52,7 @@ const Info = ({ loggedIn }) => {
         <div className="linebreak-2"></div>
         <p className="u-mm">
           You can find additional information about how to use the website by clicking the Help
-          button on the Market page.
+          button on the Market page (after signing in).
         </p>
         <br />
       </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { get, post, convertToDisplay, getDateTime } from "../utilities.js";
-import NotLoggedIn from "./not_logged_in.js";
+import ClientSocket from "../client-socket.js";
 
+import NotLoggedIn from "./not_logged_in.js";
 import Help from "./market-help.js";
 import PopupForm from "./market-form.js";
 import OrderBox from "./market-orders.js";
@@ -72,12 +73,19 @@ const Market = ({ user, loggedIn }) => {
   const closeHelp = () => setHelpOpen(false);
 
   const handleNotif = useCallback((msg) => {
-    if (msg === "New match! Go to My Matches tab to view.") setPage("match");
+    if (
+      msg ===
+        "New match! Make sure to update your directions in your Profile before meeting with the swipee!" ||
+      msg === "New match! Find the swiper via their directions when it's time to meet."
+    ) {
+      setPage("match");
+      console.log(msg, "set to match!");
+    }
   }, []);
   useEffect(() => {
-    ClientSocket.listen("notify", handleNotif);
-    return () => ClientSocket.remove_listener("notify", handleNotif);
-  }, []);
+    ClientSocket.listen("notif", handleNotif);
+    return () => ClientSocket.remove_listener("notif", handleNotif);
+  }, [user]);
 
   if (!loggedIn) return <NotLoggedIn />;
 
@@ -124,16 +132,22 @@ const Market = ({ user, loggedIn }) => {
         </div>
         <br />
         <div className="u-flex u-justify-center u-align-center market-dropdown u-wrap">
-          <div className="dropdown-menu u-flex u-width-fit">
-            <label htmlFor="select-type" className="u-mm">
-              Type:&nbsp;
-            </label>
-            <select id="select-type" value={type} onChange={(event) => setType(event.target.value)}>
-              <option value="any">Any</option>
-              <option value="buy">Request</option>
-              <option value="sell">Donate</option>
-            </select>
-          </div>
+          {page === "market" ? (
+            <div className="dropdown-menu u-flex u-width-fit">
+              <label htmlFor="select-type" className="u-mm">
+                Type:&nbsp;
+              </label>
+              <select
+                id="select-type"
+                value={type}
+                onChange={(event) => setType(event.target.value)}
+              >
+                <option value="any">Any</option>
+                <option value="buy">Request</option>
+                <option value="sell">Donation</option>
+              </select>
+            </div>
+          ) : null}
           <div className="dropdown-menu u-flex u-width-fit">
             <label htmlFor="select-market" className="u-mm">
               Timing:&nbsp;
@@ -166,15 +180,21 @@ const Market = ({ user, loggedIn }) => {
               <option value="next">Next</option>
             </select>
           </div>
-          <div className="dropdown-menu u-flex u-width-fit">
-            <label htmlFor="select-meal" className="u-mm">
-              From:&nbsp;
-            </label>
-            <select id="select-meal" value={mine} onChange={(event) => setMine(event.target.value)}>
-              <option value="false">Anyone</option>
-              <option value="true">Only Me</option>
-            </select>
-          </div>
+          {page === "market" ? (
+            <div className="dropdown-menu u-flex u-width-fit">
+              <label htmlFor="select-meal" className="u-mm">
+                From:&nbsp;
+              </label>
+              <select
+                id="select-meal"
+                value={mine}
+                onChange={(event) => setMine(event.target.value)}
+              >
+                <option value="false">Anyone</option>
+                <option value="true">Only Me</option>
+              </select>
+            </div>
+          ) : null}
         </div>
         {market !== "live" ? (
           <div className="u-flex u-justify-center u-align-center market-dropdown u-wrap">
@@ -222,7 +242,7 @@ const Market = ({ user, loggedIn }) => {
         {page === "market" ? (
           <OrderBox market={market} dhall={dhall} type={type} meal={meal} mine={mine} date={date} />
         ) : (
-          <MatchBox market={market} dhall={dhall} type={type} meal={meal} mine={mine} date={date} />
+          <MatchBox market={market} dhall={dhall} meal={meal} date={date} />
         )}
       </div>
     </div>

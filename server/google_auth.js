@@ -2,6 +2,7 @@
 const { OAuth2Client } = require("google-auth-library");
 const SocketManager = require("./socket_manager.js");
 const User = require("./models/user.js");
+const Approved = require("./models/approved-gmails.js");
 
 // create a new OAuth client used to verify google sign-in
 //this is ok (not a security risk) because only selected URLs may access this client ID
@@ -16,6 +17,17 @@ function verify(token) {
       audience: CLIENT_ID,
     })
     .then((ticket) => ticket.getPayload());
+}
+
+function validateGmail(user) {
+  return Approved.findOne({ gmail: user.email }).then((found) => {
+    console.log(user.email, "gmail");
+    console.log(found, "found");
+    if (found) return user;
+    else {
+      throw new Error("user not authorized!");
+    }
+  });
 }
 
 // gets user from DB, or makes a new account if it doesn't exist yet
@@ -37,6 +49,7 @@ function getOrCreateUser(user) {
 //when we log in: client makes request to "init_client_socket", letting the server know we have a new addition in the user-socket map
 function login(req, res) {
   verify(req.body.token)
+    .then((user) => validateGmail(user))
     .then((user) => getOrCreateUser(user))
     .then((user_doc) => {
       // persist user in the session

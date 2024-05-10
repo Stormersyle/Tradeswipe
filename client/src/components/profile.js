@@ -57,11 +57,11 @@ const Notifs = ({ user, openUpdateNotifs }) => {
       <p className="u-l u-flex u-justify-center">Notification Settings</p>
       <div className="linebreak-1"></div>
       <p className="u-mm">
-        <b>Live Match Notifications:</b> {user.live_notifs ? "On" : "Off"}
+        <b>"Live Match" Notifications:</b> {user.live_notifs ? "On" : "Off"}
       </p>
       <div className="linebreak-1"></div>
       <p className="u-mm">
-        <b>Reserve Match Notifications:</b> {user.reserve_notifs ? "On" : "Off"}
+        <b>"Scheduled Match" Notifications:</b> {user.reserve_notifs ? "On" : "Off"}
       </p>
       <br />
       <div className="u-flex u-justify-center">

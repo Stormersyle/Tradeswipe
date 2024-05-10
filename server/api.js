@@ -258,26 +258,26 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
       SocketManager.emit_to_user(
         newMatch.seller_id,
         "notif",
-        "New match! Go to My Matches tab to view."
+        "New match! Make sure to update your directions in your Profile before meeting with the swipee!"
       );
     if (buyer.live_notifs)
       SocketManager.emit_to_user(
         newMatch.buyer_id,
         "notif",
-        "New match! Go to My Matches tab to view."
+        "New match! Find the swiper via their directions when it's time to meet."
       );
   } else {
     if (seller.reserve_notifs)
       SocketManager.emit_to_user(
         newMatch.seller_id,
         "notif",
-        "New match! Go to My Matches tab to view."
+        "New match! Make sure to update your directions in your Profile before meeting with the swipee!"
       );
     if (buyer.reserve_notifs)
       SocketManager.emit_to_user(
         newMatch.buyer_id,
         "notif",
-        "New match! Go to My Matches tab to view."
+        "New match! Find the swiper via their directions when it's time to meet."
       );
   }
 

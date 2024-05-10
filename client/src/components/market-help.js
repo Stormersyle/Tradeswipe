@@ -9,12 +9,12 @@ const Help = ({ closeHelp, page }) => {
         <p className="u-mm">
           In the Market tab, you can view the "market" for meal swipes, where you can claim someone
           else's orders or place your own. Each order is a swipe request or swipe donation, and is
-          either for now (i.e. in real time) or for later (i.e. at a scheduled future time). .
+          either for now (i.e. in real time) or for later (i.e. at a scheduled future time).
         </p>
         <div className="linebreak-2"></div>
         <p>
           Note that if you claim someone's swipe request, you're offering to <b>donate</b> a swipe
-          to them; if you claim someone's donation offer, you're <b>receiving</b> a swipe from them{" "}
+          to them; if you claim someone's swipe donation, you're <b>receiving</b> a swipe from them{" "}
         </p>
         <div className="linebreak-2"></div>
         <p>

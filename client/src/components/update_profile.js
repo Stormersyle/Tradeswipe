@@ -25,7 +25,7 @@ const UpdateNotifs = ({ user, updateUser, closeUpdateNotifs }) => {
       <div className="linebreak-1"></div>
       <div className="input-row">
         <label htmlFor="live-notifs">
-          <b>Live Match Notifications:&nbsp;</b>
+          <b>"Live Match" Notifications:&nbsp;</b>
         </label>
         {user.live_notifs ? (
           <input
@@ -42,7 +42,7 @@ const UpdateNotifs = ({ user, updateUser, closeUpdateNotifs }) => {
       <div className="linebreak-1"></div>
       <div className="input-row">
         <label htmlFor="reserve-notifs">
-          <b>Reserve Match Notifications:&nbsp;</b>
+          <b>"Scheduled Match" Notifications:&nbsp;</b>
         </label>
         {user.reserve_notifs ? (
           <input

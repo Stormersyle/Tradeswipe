@@ -82,7 +82,14 @@ const ChatBox = ({ match_id, setChat }) => {
       </div>
       <div className="linebreak-1"></div>
       <div className="u-flex">
-        <input type="text" ref={inputRef} className="u-width-fill u-mm" />
+        <input
+          type="text"
+          ref={inputRef}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") submit();
+          }}
+          className="u-width-fill u-mm"
+        />
         <button className="img-button" onClick={submit}>
           <img src="/assets/send.png" className="send-icon" />
         </button>
