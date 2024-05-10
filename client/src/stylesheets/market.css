@@ -293,9 +293,9 @@
 }
 
 .messages-container {
-  max-height: 100%;
   overflow-y: scroll;
 }
+
 .send-icon {
   height: 20px;
   margin: 0 0.5vw;
