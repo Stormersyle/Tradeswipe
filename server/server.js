@@ -77,6 +77,7 @@ server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
+//purge old orders every minute
 const Order = require("./models/order.js");
 const purgeOldOrders = async () => {
   console.log("new purge!");
@@ -85,8 +86,25 @@ const purgeOldOrders = async () => {
     const order_age = Date.now() - Number(order.date);
     if (order.market === "live" && order_age > 3600000) await Order.findByIdAndDelete(order._id);
     if (order.market === "reserve" && order_age > 0) await Order.findByIdAndDelete(order._id);
-    console.log(order_age);
+    // console.log(order_age);
   }
   SocketManager.emit_to_all("update_order_book");
 };
 setInterval(purgeOldOrders, 60000);
+
+//send scheduled emails for each match ~30 min before meeting up
+const mailer = require("./mailer.js");
+const Match = require("./models/match.js");
+
+const matchReminders = async () => {
+  const matches = await Match.find({ market: "reserve" });
+  for (let match of matches) {
+    const time_till_match = Number(match.date) - Date.now();
+    if (1740000 < time_till_match && time_till_match < 1800000) {
+      // mailer.sendMatchReminder(match);
+      console.log("reminder: ", match);
+    }
+    console.log(time_till_match);
+  }
+};
+setInterval(matchReminders, 60000);

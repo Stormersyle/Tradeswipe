@@ -63,6 +63,10 @@ const Notifs = ({ user, openUpdateNotifs }) => {
       <p className="u-mm">
         <b>"Scheduled Match" Notifications:</b> {user.reserve_notifs ? "On" : "Off"}
       </p>
+      <div className="linebreak-1"></div>
+      <p className="u-mm">
+        <b>Email Notifications:</b> {user.email_notifs ? "On" : "Off"}
+      </p>
       <br />
       <div className="u-flex u-justify-center">
         <button className="default-button" onClick={openUpdateNotifs}>

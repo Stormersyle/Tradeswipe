@@ -2,6 +2,7 @@ const express = require("express");
 const auth = require("./auth.js");
 const googleAuth = require("./google_auth.js");
 const SocketManager = require("./socket_manager.js");
+const mailer = require("./mailer.js");
 
 const User = require("./models/user.js");
 const Order = require("./models/order.js");
@@ -113,7 +114,13 @@ const get_meal = (date) => {
 router.post("/update_notifs", auth.ensureLoggedIn, (req, res) => {
   User.updateOne(
     { _id: req.user._id },
-    { $set: { live_notifs: req.body.live_notifs, reserve_notifs: req.body.reserve_notifs } }
+    {
+      $set: {
+        live_notifs: req.body.live_notifs,
+        reserve_notifs: req.body.reserve_notifs,
+        email_notifs: req.body.email_notifs,
+      },
+    }
   ).then(() => res.send({}));
 });
 
@@ -279,8 +286,8 @@ router.post("/claim_order", auth.ensureLoggedIn, async (req, res) => {
         "notif",
         "New match! Find the swiper via their directions when it's time to meet."
       );
+    mailer.sendMatchNotif(newMatch); //only send match notifs for reserve matches
   }
-
   return res.send({});
 });
 

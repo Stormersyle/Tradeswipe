@@ -5,13 +5,15 @@ import "../stylesheets/profile.css";
 
 const UpdateNotifs = ({ user, updateUser, closeUpdateNotifs }) => {
   const liveRef = useRef(null),
-    reserveRef = useRef(null);
+    reserveRef = useRef(null),
+    emailRef = useRef(null);
 
   const submit_notifs = () => {
-    if (liveRef.current && reserveRef.current) {
+    if (liveRef.current && reserveRef.current && emailRef.current) {
       post("/api/update_notifs", {
         live_notifs: liveRef.current.checked,
         reserve_notifs: reserveRef.current.checked,
+        email_notifs: emailRef.current.checked,
       }).then(() => {
         updateUser();
         closeUpdateNotifs();
@@ -54,6 +56,23 @@ const UpdateNotifs = ({ user, updateUser, closeUpdateNotifs }) => {
           />
         ) : (
           <input id="reserve-notifs" type="checkbox" ref={reserveRef} className="checkbox" />
+        )}
+      </div>
+      <div className="linebreak-1"></div>
+      <div className="input-row">
+        <label htmlFor="email-notifs">
+          <b>Email Notifications:&nbsp;</b>
+        </label>
+        {user.email_notifs ? (
+          <input
+            id="email-notifs"
+            type="checkbox"
+            ref={emailRef}
+            defaultChecked={true}
+            className="checkbox"
+          />
+        ) : (
+          <input id="email-notifs" type="checkbox" ref={emailRef} className="checkbox" />
         )}
       </div>
       <br />
