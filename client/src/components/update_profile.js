@@ -95,15 +95,18 @@ const UpdateNotifs = ({ user, updateUser, closeUpdateNotifs }) => {
 //updateUser = func(). Tells App to call "/api/who_am_i" (so that updated user is stored)
 const UpdateProfile = ({ user, updateUser, closeUpdateProfile }) => {
   const phoneRef = useRef(null),
-    directionsRef = useRef(null);
+    directionsRef = useRef(null),
+    emailRef = useRef(null);
 
   const { name, kerb, email, phone_number, venmo_username, directions } = user;
   const create_new_profile = () => {
     let profile = {
       phone_number: phone_number,
+      email: email,
       directions: directions,
     };
     if (phoneRef.current) profile.phone_number = phoneRef.current.value;
+    if (emailRef.current) profile.email = emailRef.current.value;
     if (directionsRef.current) profile.directions = directionsRef.current.value;
     // console.log(profile);
     return profile;
@@ -128,9 +131,12 @@ const UpdateProfile = ({ user, updateUser, closeUpdateProfile }) => {
         <b>Kerb:&nbsp;</b> {kerb}
       </p>
       <div className="linebreak-1"></div>
-      <p>
-        <b>Email:&nbsp;</b> {email}
-      </p>
+      <div className="input-row">
+        <label htmlFor="email_input">
+          <b>Email:&nbsp;</b>
+        </label>
+        <input id="email_input" type="text" defaultValue={email} ref={emailRef} />
+      </div>
       <div className="linebreak-1"></div>
       <div className="input-row">
         <label htmlFor="phone_number">

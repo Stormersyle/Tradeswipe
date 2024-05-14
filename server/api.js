@@ -50,15 +50,24 @@ router.post("/init_client_socket", (req, res) => {
 //updates profile information for current user
 //chat gpt generated regex, may or may not be correct ...
 const validate_profile = (req, res, next) => {
-  const { phone_number, directions } = req.body;
-  if (!(typeof phone_number === "string" && typeof directions === "string"))
-    return res.send({ ok: false, msg: "inputs wrong type" });
+  const { email, phone_number, directions } = req.body;
+  if (
+    !(
+      typeof email === "string" &&
+      typeof phone_number === "string" &&
+      typeof directions === "string"
+    )
+  )
+    return res.send({ ok: false, msg: "Inputs wrong type!" });
 
   // const regex_venmo = /^[a-zA-Z0-9_-]{5,30}$/;
-  // const regex_phone = /^[\d\s\-\(\)\+]*(?:\d[\d\s\-\(\)\+]*){7,}$/;
-  // if ((is_buyer || is_seller) && !regex_phone.test(phone_number)) {
-  //   return res.send({ msg: "invalid phone number" });
-  // }
+  const regex_phone = /^[\d\s\-\(\)\+]*(?:\d[\d\s\-\(\)\+]*){7,}$/;
+  if (email && email.slice(-10) !== "@gmail.com") {
+    return res.send({ ok: false, msg: "You can only change your email to a valid gmail!" });
+  }
+  if (phone_number && !regex_phone.test(phone_number)) {
+    return res.send({ ok: false, msg: "Invalid phone number!" });
+  }
   next();
 };
 
@@ -70,6 +79,7 @@ router.post("/update_profile", auth.ensureLoggedIn, validate_profile, async (req
       $set: {
         phone_number: profile.phone_number,
         // venmo_username: profile.venmo_username,
+        email: profile.email,
         directions: profile.directions,
       },
     }
@@ -359,6 +369,7 @@ router.post("/cancel_match", auth.ensureLoggedIn, async (req, res) => {
       SocketManager.emit_to_user(match.seller_id, "notif", "Match canceled!");
     if (buyer.reserve_notifs)
       SocketManager.emit_to_user(match.buyer_id, "notif", "Match canceled!");
+    mailer.sendCancelNotif(match); //send email notifications when cancelling reserve match
   }
 
   //now, put the order back on the market if the claimer canceled

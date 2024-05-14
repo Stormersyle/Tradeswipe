@@ -62,7 +62,10 @@ const App = () => {
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <Nav loggedIn={Boolean(user._id)} handleLogout={handleLogout} />
         <Routes>
-          <Route path="/" element={<Home loggedIn={Boolean(user._id)} />} />
+          <Route
+            path="/"
+            element={<Home loggedIn={Boolean(user._id)} user={user} updateUser={init} />}
+          />
           <Route path="/market" element={<Market user={user} loggedIn={Boolean(user._id)} />} />
           <Route path="/info" element={<Info loggedIn={Boolean(user._id)} />} />
           <Route

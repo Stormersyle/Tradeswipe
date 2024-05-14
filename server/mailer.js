@@ -41,14 +41,18 @@ const sendMatchReminder = async (match) => {
   const seller = await User.findById(match.seller_id);
 
   if (buyer.email_notifs) {
-    const buyer_content = `You are scheduled to receive a swipe from ${seller.name} at ${
+    const buyer_content = `Reminder about your match on Tradeswipe! You are scheduled to receive a swipe from ${
+      seller.name
+    } at ${
       dhallDict[match.dhall]
     } within the next 30 minutes. Remember: As the swipe receiver, it is up to you to find the swipe donor based on their displayed directions.`;
     sendEmail(buyer.name, buyer.email, subject, buyer_content);
   }
 
   if (seller.email_notifs) {
-    const seller_content = `You are scheduled to donate a swipe to ${buyer.name} at ${
+    const seller_content = `Reminder about your match on Tradeswipe! You are scheduled to donate a swipe to ${
+      buyer.name
+    } at ${
       dhallDict[match.dhall]
     } within the next 30 minutes. Remember: As the swipe donor, you should update your directions in your Tradeswipe profile once you've arrived at the dining hall; it is up to the swipe receiver to find you.`;
     sendEmail(seller.name, seller.email, subject, seller_content);
@@ -104,13 +108,39 @@ const sendMatchNotif = async (match) => {
   }
 
   if (seller.email_notifs) {
-    const seller_content = `You are scheduled to donate a swipe to ${buyer.name} at ${
-      dhallDict[match.dhall]
-    }, on ${matchDate.date} at ${
+    const seller_content = `You have a new match on Tradeswipe! You are scheduled to donate a swipe to ${
+      buyer.name
+    } at ${dhallDict[match.dhall]}, on ${matchDate.date} at ${
       matchDate.time
     }. As the swipe donor, you should update your directions in your Tradeswipe profile once it's time to meet; it is up to the swipe receiver to find you.`;
     sendEmail(seller.name, seller.email, subject, seller_content);
   }
 };
 
-module.exports = { sendMatchReminder: sendMatchReminder, sendMatchNotif: sendMatchNotif };
+const sendCancelNotif = async (match) => {
+  const subject = `Match canceled!`;
+  const matchDate = getDateTime(match.date);
+
+  const buyer = await User.findById(match.buyer_id);
+  const seller = await User.findById(match.seller_id);
+
+  if (buyer.email_notifs) {
+    const buyer_content = `One of your scheduled Tradeswipe matches has been canceled. In this match, you were scheduled to receive a swipe from  ${
+      seller.name
+    } at ${dhallDict[match.dhall]}, on ${matchDate.date} at ${matchDate.time}.`;
+    sendEmail(buyer.name, buyer.email, subject, buyer_content);
+  }
+
+  if (seller.email_notifs) {
+    const seller_content = `One of your scheduled Tradeswipe matches has been canceled. In this match, you were scheduled to donate a swipe to ${
+      buyer.name
+    } at ${dhallDict[match.dhall]}, on ${matchDate.date} at ${matchDate.time}.`;
+    sendEmail(seller.name, seller.email, subject, seller_content);
+  }
+};
+
+module.exports = {
+  sendMatchReminder: sendMatchReminder,
+  sendMatchNotif: sendMatchNotif,
+  sendCancelNotif: sendCancelNotif,
+};
