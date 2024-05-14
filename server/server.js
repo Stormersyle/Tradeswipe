@@ -101,10 +101,10 @@ const matchReminders = async () => {
   for (let match of matches) {
     const time_till_match = Number(match.date) - Date.now();
     if (1740000 < time_till_match && time_till_match < 1800000) {
-      // mailer.sendMatchReminder(match);
-      console.log("reminder: ", match);
+      mailer.sendMatchReminder(match);
+      // console.log("reminder: ", match);
     }
-    console.log(time_till_match);
+    // console.log(time_till_match);
   }
 };
 setInterval(matchReminders, 60000);
