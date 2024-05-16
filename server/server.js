@@ -92,10 +92,37 @@ const purgeOldOrders = async () => {
 };
 setInterval(purgeOldOrders, 60000);
 
+//purge old matches every minute; add old matches to the transaction list
+const Match = require("./models/match.js");
+const Transaction = require("./models/transaction.js");
+const purgeOldMatches = async () => {
+  console.log("purging matches!");
+  const matches = await Match.find();
+  for (let match of matches) {
+    const match_age = Date.now() - Number(match.date);
+    if (match_age > 3600000) {
+      const newTransaction = new Transaction({
+        buyer_id: match.buyer_id,
+        seller_id: match.seller_id,
+        market: match.market,
+        meal: match.meal,
+        dhall: match.dhall,
+        price: match.price,
+        date: match.date,
+      });
+      await newTransaction.save();
+      await Match.findByIdAndDelete(match._id);
+      SocketManager.emit_to_user(match.buyer_id, "update_matches");
+      SocketManager.emit_to_user(match.seller_id, "update_matches");
+      SocketManager.emit_to_user(match.buyer_id, "update_transactions");
+      SocketManager.emit_to_user(match.seller_id, "update_transactions");
+    }
+  }
+};
+setInterval(purgeOldMatches, 60000);
+
 //send scheduled emails for each match ~30 min before meeting up
 const mailer = require("./mailer.js");
-const Match = require("./models/match.js");
-
 const matchReminders = async () => {
   const matches = await Match.find({ market: "reserve" });
   for (let match of matches) {
